@@ -8,7 +8,7 @@
     "start": "node server/index.js",
     "server": "node server/index.js",
     "client": "vite",
-    "build": "vite build",
+    "build": "node ./node_modules/vite/bin/vite.js build",
     "preview": "vite preview"
   },
   "keywords": [],
