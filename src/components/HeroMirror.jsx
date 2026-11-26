@@ -11,7 +11,7 @@ export default function HeroMirror({ onTryLook, onCheckDate, onOpenAdmin }) {
   const headlineRef = useRef(null);
 
   const activeLook = HERO_LOOKS[activeLookIdx];
-  const headlineWords = 'Mirror me dekho, apni dulhan wali glow dekho'.split(' ');
+  const headlineWords = 'Look into the mirror, reveal your bridal glow'.split(' ');
 
   useEffect(() => {
     if (headlineRef.current) {
@@ -68,7 +68,7 @@ export default function HeroMirror({ onTryLook, onCheckDate, onOpenAdmin }) {
             <span
               key={idx}
               className={`hero-word inline-block mr-2.5 ${
-                word.toLowerCase().includes('dulhan') || word.toLowerCase().includes('glow')
+                word.toLowerCase().includes('bridal') || word.toLowerCase().includes('glow')
                   ? 'text-[#D4AF37] italic pr-1'
                   : ''
               }`}
@@ -148,14 +148,14 @@ export default function HeroMirror({ onTryLook, onCheckDate, onOpenAdmin }) {
             onClick={onTryLook}
             className="btn-shimmer w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#B01E2E] border-2 border-[#D4AF37] text-[#FFF8F0] font-bold text-sm tracking-wide shadow-lg cursor-pointer"
           >
-            Mirror Me Try Karo
+            Try Look in Mirror
           </button>
           <button
             type="button"
             onClick={onCheckDate}
             className="btn-shimmer w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#121212]/85 border border-[#D4AF37] text-[#D4AF37] font-semibold text-sm tracking-wide cursor-pointer"
           >
-            Bridal Date Check Karo
+            Check Bridal Dates
           </button>
         </div>
 

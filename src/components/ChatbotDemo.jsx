@@ -2,39 +2,39 @@ import React, { useState } from 'react';
 import { CssCheck, CssSparkle } from './CssIcons';
 
 const INITIAL_MESSAGES = [
-  { id: 1, sender: 'bride', text: 'Bridal makeup kitna charge hai?' },
-  { id: 2, sender: 'bot', text: 'Hi! Event date, location aur makeup type kya hai? (HD / Airbrush / Engagement)' },
+  { id: 1, sender: 'bride', text: 'How much does bridal makeup cost?' },
+  { id: 2, sender: 'bot', text: 'Hi! Please share your event date, city, and preferred makeup finish (HD / Airbrush / Engagement).' },
 ];
 
 const PRESET_STEPS = [
   {
     id: 'step-1',
     reply: '12 Feb, Jaipur, HD Bridal',
-    botResponse: '12 Feb Available Hai — HD Bridal ₹25,000 + ₹3,500 Jaipur Travel (Advance ₹10,000).',
+    botResponse: '12 Feb is Available — HD Bridal ₹25,000 + ₹3,500 Jaipur Travel (Advance ₹10,000).',
     hasPdf: true,
   },
   {
     id: 'step-2',
-    reply: 'Airbrush me kitna difference hai?',
-    botResponse: 'Airbrush Bridal is ₹35,000 — featherlight waterproof finish for 16+ hrs.',
+    reply: 'What is the difference with Airbrush?',
+    botResponse: 'Airbrush Bridal is ₹35,000 — featherlight waterproof finish that lasts 16+ hours.',
     hasPdf: false,
   },
   {
     id: 'step-3',
-    reply: 'Date lock kaise karu?',
-    botResponse: 'Click Pay Advance ₹10,000 below — 48-Hr hold timer starts automatically!',
+    reply: 'How do I lock my wedding date?',
+    botResponse: 'Click Pay Advance ₹10,000 below — your 48-Hr hold timer starts automatically!',
     hasPdf: false,
   },
 ];
 
 const LANG_GREETINGS = {
-  Hinglish: 'Hi! Event date, location aur makeup type kya hai? (HD / Airbrush / Engagement)',
-  Hindi: 'Namaste ji! Aapki shaadi ki tarikh, shehar aur makeup pasand (HD / Airbrush) batayein.',
-  Marwari: 'Khamma Ghani! Aapri shaadi ri tarikh, gaon/shehar aur makeup pasand batavo sa!',
+  English: 'Hi! Please share your event date, city, and preferred makeup finish (HD / Airbrush / Engagement).',
+  Hindi: 'Namaste! Please share your wedding date, city, and preferred finish (HD / Airbrush).',
+  Marwari: 'Khamma Ghani! Please share your wedding date, city, and preferred finish.',
 };
 
 export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
-  const [lang, setLang] = useState('Hinglish');
+  const [lang, setLang] = useState('English');
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [stepIdx, setStepIdx] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
@@ -71,7 +71,7 @@ export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
     setHandoverTriggered(true);
     setMessages((prev) => [
       ...prev,
-      { id: Date.now(), sender: 'bride', text: 'Mujhe custom skin/shade consultation chahiye' },
+      { id: Date.now(), sender: 'bride', text: 'I would like a custom skin & shade consultation' },
     ]);
     setIsTyping(true);
 
@@ -102,7 +102,7 @@ export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
         {
           id: Date.now() + 1,
           sender: 'bot',
-          text: 'Lead saved! Senior Artist Riya aapko 30 min me call karegi. Owner dashboard alerted!',
+          text: 'Lead saved! Senior Artist Riya will call you within 30 minutes. Owner dashboard alerted!',
         },
       ]);
     }, 800);
@@ -124,7 +124,7 @@ export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
             <CssSparkle size={11} /> 24x7 Auto Inquiry Bot
           </span>
           <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#121212]">
-            DM Se Booking Lock Tak — Zero Missed Leads
+            From First DM to Date Lock — Zero Missed Leads
           </h2>
           <p className="text-sm text-[#121212]/75 leading-relaxed">
             Whether a bride messages at 2 AM on Instagram or WhatsApp, Fusion&apos;s bot checks availability, shares <span className="font-semibold text-[#B01E2E]">Bridal_Packages.pdf</span>, saves the lead to CRM, and triggers Human Handover when needed.
@@ -153,7 +153,7 @@ export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
                 <div className="text-[10px] text-emerald-300">21. Multi-Lang: {lang}</div>
               </div>
               <div className="flex items-center gap-1">
-                {['Hinglish', 'Hindi', 'Marwari'].map((l) => (
+                {['English', 'Hindi', 'Marwari'].map((l) => (
                   <button
                     key={l}
                     type="button"

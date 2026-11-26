@@ -3,28 +3,28 @@ import { CssSparkle } from './CssIcons';
 
 const FAQS = [
   {
-    q: 'Bridal advance kitna hota hai aur 48-Hr Date Lock rule kya hai?',
-    a: 'Bridal date lock karne ke liye ₹10,000 advance (UPI/Card) lagta hai. Bina payment ke inquiry 48 hours tak hold pe rehti hai—agar 48 hrs me payment nahi aaya to date auto-free ho jaati hai aur waitlisted bride ko chali jaati hai.',
+    q: 'What is the bridal advance amount and how does the 48-Hour Date Lock work?',
+    a: 'Locking a bridal wedding date requires a ₹10,000 advance via UPI or Card. Inquiries without payment are held for 48 hours—if unpaid when the timer expires, the date automatically releases to the waitlist.',
   },
   {
-    q: 'HD Bridal (₹25,000) aur Airbrush Bridal (₹35,000) me kya difference hai?',
-    a: 'HD Bridal satin-matte brush/sponge finish deta hai (14–16 hrs stay). Airbrush Bridal silicone-free featherlight mist se hota hai—sweat-proof, waterproof aur outdoor/daytime pheras ke liye best hai.',
+    q: 'What is the difference between HD Bridal (₹25,000) and Airbrush Bridal (₹35,000)?',
+    a: 'HD Bridal delivers a satin-matte, camera-ready finish with 14–16 hour wear. Airbrush Bridal uses a featherlight, silicone-free mist that is sweat-proof and ideal for outdoor or daytime ceremonies.',
   },
   {
-    q: 'Kya aap Jaipur, Pushkar ya Kishangarh outstation venues par aate ho?',
-    a: 'Haan! Ajmer city me ₹0 travel charge hai. Pushkar/Kishangarh ke liye ₹1,500, Jaipur ₹3,500 aur Udaipur ₹5,000 fixed outstation travel charge pehle hi calendar booking me clear dikhta hai.',
+    q: 'Do you travel to outstation venues in Jaipur, Pushkar, or Kishangarh?',
+    a: 'Yes! Ajmer local bookings have ₹0 travel fee. Transparent outstation travel charges—Pushkar/Kishangarh (₹1,500), Jaipur (₹3,500), and Udaipur (₹5,000)—are displayed upfront before you book.',
   },
   {
-    q: 'Agar shaadi ki date change ho jaye to reschedule ya refund policy kya hai?',
-    a: 'Aap apne Bridal Portal se 1 baar FREE date reschedule kar sakti hain (event se 7 din pehle tak). Cancellation par ₹10,000 bridal advance aur ₹199 daily token non-refundable hote hain.',
+    q: 'What is your reschedule and cancellation policy if our wedding date changes?',
+    a: 'You can reschedule your wedding date once free of charge up to 7 days before the event from your Bridal Portal. Upon cancellation, the ₹10,000 bridal advance and ₹199 daily token are non-refundable.',
   },
   {
-    q: 'Kya bridal booking me Trial session aur Lehenga/Dupatta draping included hai?',
-    a: 'Haan, D-7 par aapka Final Trial session (e.g. 25 Jan, 4 PM) schedule hota hai jahan eye/lip look aur jewellery lock hoti hai. Double-dupatta draping aap Booking Confirmation par 1-click add kar sakti hain.',
+    q: 'Are bridal trials and lehenga/dupatta draping included?',
+    a: 'Yes, a final trial session is scheduled on D-7 to lock your eye, lip, and jewellery pairing. Double-dupatta draping can be added in one click during booking confirmation.',
   },
   {
-    q: 'Groom ke liye aur daily Hair/Skin services ke liye kya packages hain?',
-    a: 'Dulhe ke liye Royal Groom Package (₹8,000) aur Pre-Wedding Glow (₹3,499) available hai. Daily Haircut (₹499), Hair Spa (₹999), Hydra-Glow Facial (₹1,499) aap ₹199 token se lock kar sakte hain.',
+    q: 'What packages do you offer for grooms and daily salon services?',
+    a: 'We offer the Royal Groom Package (₹8,000) and Groom Pre-Wedding Glow (₹3,499). Daily Haircuts (₹499), Hair Spa (₹999), and Hydra-Glow Facials (₹1,499) can be locked with a ₹199 token.',
   },
 ];
 
@@ -39,7 +39,7 @@ export default function FaqSection() {
             <CssSparkle size={11} /> Brides &amp; Clients FAQ
           </span>
           <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#121212] mt-3">
-            Aapke Sawal, Hamare Seedhe Jawab
+            Frequently Asked Questions
           </h2>
           <p className="text-sm text-stone-600 mt-1.5">
             Clear answers on pricing, 48-hr holds, outstation travel &amp; trial sessions.

@@ -170,7 +170,7 @@ export default function ServicesCalculator({ onTokenBooked }) {
               onClick={handleLockToken}
               className="btn-shimmer mt-5 w-full py-3.5 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#F5E08E] to-[#D4AF37] text-[#121212] font-bold text-xs tracking-wide cursor-pointer disabled:opacity-50"
             >
-              ₹199 Token se Slot Lock Karo
+              {tokenReceipt ? 'Slot Locked!' : 'Lock Slot With ₹199 Token'}
             </button>
 
             {tokenReceipt && (

@@ -161,7 +161,7 @@ export default function BookingFlow({ preselectedLook, selectedArtist, onBooking
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#B01E2E] bg-[#FFF8F0] px-3.5 py-1 rounded-full border border-[#D4AF37]/55">
-            <CssCalendar /> Sirf 3 Click Me Date Lock
+            <CssCalendar /> Lock Your Date in 3 Clicks
           </span>
           <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#121212] mt-3">
             3-Click Bridal Booking &amp; 48-Hr Lock
@@ -186,7 +186,7 @@ export default function BookingFlow({ preselectedLook, selectedArtist, onBooking
             <div>
               <div className="text-[11px] uppercase tracking-widest text-[#F5E08E] font-bold">48-Hour Auto-Release Rule</div>
               <p className="text-xs text-[#FFF8F0]/90">
-                Payment nahi aaya to date auto-free + waitlist wali next bride ko auto-alert.
+                Unpaid holds release automatically after 48 hours and notify the next waitlisted bride.
               </p>
             </div>
           </div>

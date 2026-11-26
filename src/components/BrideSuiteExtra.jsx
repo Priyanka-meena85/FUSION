@@ -35,8 +35,8 @@ export default function BrideSuiteExtra({ onBookNail }) {
               <span className="text-[10px] uppercase tracking-widest text-[#F5E08E] font-bold">
                 8. Phone Countdown Widget
               </span>
-              <div className="font-display text-3xl font-bold mt-2">23 Din Bache</div>
-              <p className="text-xs text-[#FADADD] mt-1">Priya ki Shaadi · 12 Feb 2026</p>
+              <div className="font-display text-3xl font-bold mt-2">23 Days Left</div>
+              <p className="text-xs text-[#FADADD] mt-1">Priya&apos;s Wedding · 12 Feb 2026</p>
             </div>
             <div className="mt-4 rounded-xl bg-[#121212]/45 p-3 text-[11px] border border-[#D4AF37]/40">
               <strong>Today&apos;s Tip:</strong> Drink 3L water + apply SPF 50 indoors.
@@ -50,9 +50,9 @@ export default function BrideSuiteExtra({ onBookNail }) {
                 11. D-Day Live Artist Tracking
               </span>
               <h3 className="font-display text-lg font-bold mt-1 text-[#121212]">
-                Riya Sen Nikli Hai
+                Riya Sen Is On Her Way
               </h3>
-              <p className="text-xs text-stone-600">ETA: 20 Min Me Hotel Pahuchegi</p>
+              <p className="text-xs text-stone-600">ETA: Arriving at Hotel in 20 Mins</p>
             </div>
             <div className="mt-4 space-y-2">
               <div className="w-full h-2.5 rounded-full bg-[#FADADD] overflow-hidden">
@@ -72,7 +72,7 @@ export default function BrideSuiteExtra({ onBookNail }) {
                 7. Trial Buddy Invite (10% OFF)
               </span>
               <h3 className="font-display text-lg font-bold mt-1 text-[#121212]">
-                Best Friend Ko Saath Laao
+                Bring Your Best Friend Along
               </h3>
               <input
                 type="text"
@@ -101,7 +101,7 @@ export default function BrideSuiteExtra({ onBookNail }) {
                   6. Bride + Family Group Booking
                 </span>
                 <h3 className="font-display text-xl font-bold text-[#121212]">
-                  Mummy, Sister &amp; Saas — Ek Saath Book Karein
+                  Mom, Sister &amp; Family — Book Together
                 </h3>
               </div>
               <div className="font-display text-xl font-bold text-[#B01E2E]">

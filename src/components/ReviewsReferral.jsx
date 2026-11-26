@@ -133,7 +133,7 @@ export default function ReviewsReferral() {
               <CssSparkle size={11} /> Referral Wallet
             </span>
             <h3 className="font-display text-2xl sm:text-3xl font-bold">
-              Friend ko bhejo, dono ko ₹500 off
+              Refer a Friend — Both Get ₹500 Off
             </h3>
             <p className="text-xs text-[#FFF8F0]/80">
               Share your personal referral code with a bride-to-be. Both get instant ₹500 credit at Fusion Ajmer.

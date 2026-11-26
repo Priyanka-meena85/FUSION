@@ -63,10 +63,10 @@ export default function LookFinder({ onBookLook }) {
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-9">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#B01E2E] bg-[#FADADD] px-3.5 py-1 rounded-full">
-            <CssSparkle size={11} /> Look Finder — Mirror Me Try Karo
+            <CssSparkle size={11} /> Look Finder — Virtual Mirror Preview
           </span>
           <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#121212] mt-3">
-            Apna Bridal Look Khud Design Karo
+            Design Your Signature Bridal Look
           </h2>
           <p className="text-sm text-[#121212]/70 mt-2 max-w-xl mx-auto">
             Select your lehenga colour, jewellery &amp; makeup finish. The Magical Mirror previews your custom look with exact transparent pricing.
@@ -216,7 +216,7 @@ export default function LookFinder({ onBookLook }) {
               }
               className="btn-shimmer w-full py-3.5 rounded-full bg-gradient-to-r from-[#B01E2E] via-[#8D173A] to-[#B01E2E] text-[#FFF8F0] font-bold text-sm tracking-wide border border-[#D4AF37] cursor-pointer"
             >
-              Is Look Ko Book Karo
+              Book This Bridal Look
             </button>
           </div>
         </div>

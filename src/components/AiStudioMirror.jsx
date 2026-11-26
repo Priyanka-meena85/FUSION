@@ -326,17 +326,17 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
           {activeTab === 'voice' && (
             <div className="text-center max-w-xl mx-auto space-y-4">
               <h3 className="font-display text-xl font-bold text-[#D4AF37]">
-                20. Voice Booking — Hindi Me Bolein
+                20. Voice Booking — Hands-Free
               </h3>
               <p className="text-xs text-white/75">
-                Tap below and say: &ldquo;Mujhe 12 Feb ko dulhan wala makeup karwana hai&rdquo;
+                Tap below and say: &ldquo;I want to book bridal makeup for 12 February&rdquo;
               </p>
               <button
                 type="button"
                 onClick={handleVoiceDemo}
                 className="btn-shimmer px-7 py-3 rounded-full bg-[#B01E2E] border-2 border-[#D4AF37] text-sm font-bold cursor-pointer"
               >
-                Speak in Hindi (Start Voice)
+                Start Voice Booking
               </button>
               {voiceText && (
                 <div className="rounded-2xl bg-black/45 border border-[#D4AF37]/40 p-4 text-xs space-y-1">

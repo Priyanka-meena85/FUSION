@@ -200,7 +200,7 @@ export function MirrorLookVisual({
                 />
                 {/* Royal Monogram / Couture Crest */}
                 <span className="font-display text-xl font-bold tracking-widest text-[#FFF8F0] drop-shadow">
-                  {isGroom ? 'DULHA' : 'DULHAN'}
+                  {isGroom ? 'GROOM' : 'BRIDE'}
                 </span>
                 {/* Layered Kundan Choker Arc */}
                 <div

@@ -157,7 +157,7 @@ export default function BridalJourney({ onJourneyUpdate }) {
         {celebrateDDay && (
           <div className="mb-6 rounded-2xl bg-[#D4AF37] text-[#121212] p-4 text-center font-display font-bold text-lg shadow-xl flex items-center justify-center gap-3">
             <CssSparkle size={18} />
-            <span>Dulhan Ready! Wishing You a Magical Wedding Day!</span>
+            <span>Bride Ready! Wishing You a Magical Wedding Day!</span>
             <CssSparkle size={18} />
           </div>
         )}
