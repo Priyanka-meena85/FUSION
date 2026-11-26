@@ -25,7 +25,7 @@ export default function ViralEducatorHub() {
           <div className="rounded-3xl bg-[#121212] text-[#FFF8F0] p-5 border border-[#D4AF37]/60 flex flex-col justify-between">
             <div>
               <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-bold">
-                25. Transformation Reel Generator
+                Bridal Reel Preview
               </span>
               <div
                 className={`mt-3 h-36 rounded-2xl border border-[#D4AF37]/50 flex flex-col items-center justify-center p-3 text-center transition-all ${
@@ -54,7 +54,7 @@ export default function ViralEducatorHub() {
           <div className="rounded-3xl bg-[#FFF8F0] p-5 border-2 border-[#D4AF37] shadow-sm flex flex-col justify-between">
             <div>
               <span className="text-[10px] uppercase tracking-widest text-[#B01E2E] font-bold">
-                26 &amp; 27. Educator Masterclass + Certificate
+                Mini Jain Makeup Academy
               </span>
               <h3 className="font-display text-lg font-bold text-[#121212] mt-1">
                 Online Bridal Class · ₹999
@@ -88,7 +88,7 @@ export default function ViralEducatorHub() {
           <div className="rounded-3xl bg-[#FFF8F0] p-5 border-2 border-[#D4AF37] shadow-sm flex flex-col justify-between">
             <div>
               <span className="text-[10px] uppercase tracking-widest text-[#B01E2E] font-bold">
-                29 &amp; 30. Leaderboard + Loyalty Card
+                Referral Rewards &amp; Loyalty Card
               </span>
               <div className="mt-2 text-xs space-y-1 bg-[#FADADD]/45 p-2.5 rounded-xl">
                 <div className="font-bold text-[#B01E2E]">Top Referrers This Month:</div>
@@ -130,7 +130,7 @@ export default function ViralEducatorHub() {
         <div className="rounded-3xl bg-[#121212] text-[#FFF8F0] p-5 sm:p-6 border border-[#D4AF37]/50 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#D4AF37] font-bold">
-              <CssSparkle size={10} /> 28, 31 &amp; 32. Bride Stories · Brides Community · All-Channel Sync
+              <CssSparkle size={10} /> Bride Stories · Fusion Brides Community
             </div>
             <h4 className="font-display text-lg font-bold">
               Featured Story: Priya — Jaipur Bride, Red Lehenga Look

@@ -91,23 +91,23 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#D4AF37] bg-[#B01E2E]/30 px-3.5 py-1 rounded-full border border-[#D4AF37]/45">
-            <CssSparkle size={11} /> Next-Level AI &amp; AR Mirror
+            <CssSparkle size={11} /> Virtual Mirror Studio
           </span>
           <h2 className="font-display text-2xl sm:text-4xl font-bold mt-3">
-            AI Skin, Virtual Try-On &amp; Hindi Voice Studio
+            Shade Try-On, Skin Guide &amp; Budget Planner
           </h2>
           <p className="text-sm text-[#FFF8F0]/70 mt-1.5">
-            Try lipstick &amp; hair shades live, analyze your skin &amp; face shape, or book using Hindi voice.
+            Preview lipstick &amp; hair shades, get your pre-bridal skin guide, or plan by budget.
           </p>
         </div>
 
         {/* Studio Tabs */}
         <div className="flex flex-wrap justify-center gap-2 mb-7">
           {[
-            { id: 'ar', label: 'AR Lip & Hair Try-On' },
-            { id: 'skin', label: 'AI Skin & Face Shape' },
-            { id: 'budget', label: 'Smart Budget & Lehenga Match' },
-            { id: 'voice', label: 'Hindi Voice Booking' },
+            { id: 'ar', label: 'Lip & Hair Try-On' },
+            { id: 'skin', label: 'Skin & Face Guide' },
+            { id: 'budget', label: 'Budget & Lehenga Match' },
+            { id: 'voice', label: 'Voice Booking' },
           ].map((t) => (
             <button
               key={t.id}
@@ -170,7 +170,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
               <div className="md:col-span-7 space-y-5">
                 <div>
                   <label className="text-xs uppercase tracking-wider text-[#D4AF37] font-bold block mb-2">
-                    3. Virtual Try-On — Lipstick Shade
+                    Lipstick Shade Preview
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {LIP_SHADES.map((s) => (
@@ -191,7 +191,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
 
                 <div>
                   <label className="text-xs uppercase tracking-wider text-[#D4AF37] font-bold block mb-2">
-                    4. AI Hair Colour Preview
+                    Hair Colour Preview
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {HAIR_COLOURS.map((h) => (
@@ -216,7 +216,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
           {activeTab === 'skin' && (
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-3">
-                <h3 className="font-display text-lg font-bold text-[#D4AF37]">1. AI Skin Analysis</h3>
+                <h3 className="font-display text-lg font-bold text-[#D4AF37]">Pre-Bridal Skin Guide</h3>
                 <div className="flex gap-2">
                   {Object.keys(SKIN_PLANS).map((sk) => (
                     <button
@@ -237,7 +237,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-display text-lg font-bold text-[#D4AF37]">2. AI Face Shape + Look Suggestion</h3>
+                <h3 className="font-display text-lg font-bold text-[#D4AF37]">Face Shape &amp; Glam Guide</h3>
                 <div className="flex gap-2">
                   {Object.keys(FACE_TIPS).map((fs) => (
                     <button
@@ -263,7 +263,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
             <div className="grid md:grid-cols-2 gap-6 items-center">
               <div className="space-y-3">
                 <h3 className="font-display text-lg font-bold text-[#D4AF37]">
-                  5. Smart Package Recommender
+                  Package Budget Planner
                 </h3>
                 <div className="flex justify-between text-xs">
                   <span>Your Bridal Budget</span>
@@ -286,7 +286,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
 
               <div className="space-y-3">
                 <h3 className="font-display text-lg font-bold text-[#D4AF37]">
-                  9. Lehenga + Makeup Match Tool
+                  Lehenga &amp; Makeup Pairing
                 </h3>
                 <div className="flex gap-2">
                   {['Red', 'Pastel Pink', 'Wine', 'Ivory Gold'].map((l) => (
@@ -326,7 +326,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
           {activeTab === 'voice' && (
             <div className="text-center max-w-xl mx-auto space-y-4">
               <h3 className="font-display text-xl font-bold text-[#D4AF37]">
-                20. Voice Booking — Hands-Free
+                Hands-Free Voice Booking
               </h3>
               <p className="text-xs text-white/75">
                 Tap below and say: &ldquo;I want to book bridal makeup for 12 February&rdquo;

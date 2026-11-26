@@ -56,7 +56,7 @@ export default function HeroMirror({ onTryLook, onCheckDate, onOpenAdmin }) {
       <div className="relative z-10 max-w-5xl mx-auto px-4 pt-8 sm:pt-10 flex flex-col items-center text-center">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#D4AF37]/50 bg-[#121212]/65 text-[#D4AF37] text-xs tracking-widest uppercase mb-5">
           <CssSparkle size={11} />
-          <span>@fusionsaloon16 · Ajmer&apos;s Luxury Bridal Studio</span>
+          <span>@fusionsaloon16 · Bridal &amp; Nail Studio, Ajmer</span>
           <CssSparkle size={11} />
         </div>
 

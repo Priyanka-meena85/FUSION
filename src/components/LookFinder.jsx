@@ -88,7 +88,7 @@ export default function LookFinder({ onBookLook }) {
             </div>
             <div className="mt-3 text-center">
               <span className="text-[11px] uppercase tracking-widest text-[#B01E2E] font-semibold">
-                AI Suggested Look
+                Curated Bridal Match
               </span>
               <p className="font-display text-base font-bold text-[#121212]">{aiLookName}</p>
             </div>

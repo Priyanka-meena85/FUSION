@@ -33,7 +33,7 @@ export default function BrideSuiteExtra({ onBookNail }) {
           <div className="rounded-3xl bg-[#B01E2E] text-[#FFF8F0] p-5 border-2 border-[#D4AF37] shadow-lg flex flex-col justify-between">
             <div>
               <span className="text-[10px] uppercase tracking-widest text-[#F5E08E] font-bold">
-                8. Phone Countdown Widget
+                Wedding Countdown
               </span>
               <div className="font-display text-3xl font-bold mt-2">23 Days Left</div>
               <p className="text-xs text-[#FADADD] mt-1">Priya&apos;s Wedding · 12 Feb 2026</p>
@@ -47,7 +47,7 @@ export default function BrideSuiteExtra({ onBookNail }) {
           <div className="rounded-3xl bg-[#FFF8F0] p-5 border-2 border-[#D4AF37] shadow-sm flex flex-col justify-between">
             <div>
               <span className="text-[10px] uppercase tracking-widest text-[#B01E2E] font-bold">
-                11. D-Day Live Artist Tracking
+                D-Day Artist Arrival
               </span>
               <h3 className="font-display text-lg font-bold mt-1 text-[#121212]">
                 Riya Sen Is On Her Way
@@ -69,7 +69,7 @@ export default function BrideSuiteExtra({ onBookNail }) {
           <div className="rounded-3xl bg-[#FADADD]/55 p-5 border-2 border-[#D4AF37] shadow-sm flex flex-col justify-between">
             <div>
               <span className="text-[10px] uppercase tracking-widest text-[#B01E2E] font-bold">
-                7. Trial Buddy Invite (10% OFF)
+                Trial Buddy Pass (10% Off)
               </span>
               <h3 className="font-display text-lg font-bold mt-1 text-[#121212]">
                 Bring Your Best Friend Along
@@ -98,7 +98,7 @@ export default function BrideSuiteExtra({ onBookNail }) {
             <div className="flex items-center justify-between mb-3">
               <div>
                 <span className="text-[10px] uppercase tracking-widest font-bold text-[#B01E2E]">
-                  6. Bride + Family Group Booking
+                  Bride &amp; Family Suite
                 </span>
                 <h3 className="font-display text-xl font-bold text-[#121212]">
                   Mom, Sister &amp; Family — Book Together
@@ -140,7 +140,7 @@ export default function BrideSuiteExtra({ onBookNail }) {
           <div className="md:col-span-5 rounded-3xl bg-[#121212] text-[#FFF8F0] p-6 border border-[#D4AF37]/60 space-y-4">
             <div>
               <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-bold">
-                10. Emergency Bride Kit (D-Day)
+                D-Day Touch-Up Guide
               </span>
               <p className="text-xs text-white/80 mt-1">
                 • Lipstick fade? Blot tissue + tap touch-up tint.<br />
@@ -149,7 +149,7 @@ export default function BrideSuiteExtra({ onBookNail }) {
             </div>
             <div className="pt-3 border-t border-white/15">
               <span className="text-[10px] uppercase tracking-widest text-[#FADADD] font-bold">
-                12. Post-Shaadi 1-Month Skin Recovery
+                Post-Wedding Skin Recovery
               </span>
               <p className="text-xs text-white/80 mt-1">
                 Book your D+10 Calming Hydra Recovery Facial to detox heavy bridal makeup &amp; restore natural glow.
@@ -163,7 +163,7 @@ export default function BrideSuiteExtra({ onBookNail }) {
           <div className="grid lg:grid-cols-12 gap-6 items-center">
             <div className="lg:col-span-7 space-y-4">
               <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-[#D4AF37] font-bold">
-                <CssSparkle size={10} /> 13 &amp; 14. Nail Design Library + Hand Try-On
+                <CssSparkle size={10} /> Signature Nail Art Studio
               </span>
               <h3 className="font-display text-2xl font-bold">
                 Select Nail Art &amp; Try On Your Hand
@@ -210,11 +210,11 @@ export default function BrideSuiteExtra({ onBookNail }) {
 
               <div className="rounded-2xl bg-white/5 border border-white/15 p-4 text-xs space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-[#D4AF37] font-bold">15. Hair Health Score</span>
+                  <span className="text-[#D4AF37] font-bold">Hair Health Score</span>
                   <span className="font-bold text-emerald-400">70% Healthy (Spa Due in 15 Days)</span>
                 </div>
                 <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                  <span>16. Moroccan Serum (₹850)</span>
+                  <span>Moroccan Serum (₹850)</span>
                   <button
                     type="button"
                     onClick={() => setReordered((p) => [...p, 'serum'])}
