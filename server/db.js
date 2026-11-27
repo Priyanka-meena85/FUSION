@@ -120,9 +120,30 @@ db.exec(`
     order_id TEXT NOT NULL,
     payment_id TEXT,
     amount_inr INTEGER NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'INR',
     status TEXT NOT NULL DEFAULT 'created',
+    failure_reason TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     verified_at TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS webhook_events (
+    event_id TEXT PRIMARY KEY,
+    event_type TEXT NOT NULL,
+    order_id TEXT,
+    payment_id TEXT,
+    processed_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS payment_audit_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    booking_id INTEGER,
+    order_id TEXT,
+    payment_id TEXT,
+    event_type TEXT NOT NULL,
+    status TEXT NOT NULL,
+    message TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 `);
 
@@ -137,6 +158,23 @@ if (!bookingCols.includes('reschedule_count')) {
 if (!bookingCols.includes('upsells')) {
   db.exec(`ALTER TABLE bookings ADD COLUMN upsells TEXT DEFAULT ''`);
 }
+if (!bookingCols.includes('idempotency_key')) {
+  db.exec(`ALTER TABLE bookings ADD COLUMN idempotency_key TEXT`);
+}
+
+const paymentCols = db.prepare(`PRAGMA table_info(payments)`).all().map((c) => c.name);
+if (!paymentCols.includes('currency')) {
+  db.exec(`ALTER TABLE payments ADD COLUMN currency TEXT NOT NULL DEFAULT 'INR'`);
+}
+if (!paymentCols.includes('failure_reason')) {
+  db.exec(`ALTER TABLE payments ADD COLUMN failure_reason TEXT`);
+}
+
+db.exec(`
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_bookings_idempotency ON bookings(idempotency_key) WHERE idempotency_key IS NOT NULL;
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_payments_order_id ON payments(order_id);
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_payments_payment_id ON payments(payment_id) WHERE payment_id IS NOT NULL;
+`);
 
 function seedDatabase() {
   const dateCount = db.prepare('SELECT COUNT(*) AS cnt FROM calendar_dates').get().cnt;

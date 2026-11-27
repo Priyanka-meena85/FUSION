@@ -6,7 +6,19 @@ const cookieParser = require('cookie-parser');
 const fs = require('node:fs');
 const path = require('node:path');
 const db = require('./db');
-const { createPaymentOrder, verifyRazorpaySignature, sendWhatsAppTemplate } = require('./payments');
+const {
+  createPaymentOrder,
+  verifyRazorpaySignature,
+  fetchRazorpayPayment,
+  verifyWebhookSignature,
+  sendWhatsAppTemplate,
+} = require('./payments');
+const {
+  ALLOWED_SLOTS,
+  getCloudinaryConfig,
+  buildCloudinaryUrl,
+  uploadToCloudinary,
+} = require('./storage/cloudinary');
 const {
   getSecurityConfig,
   timingSafeMatch,
@@ -62,15 +74,16 @@ app.use(
   helmet({
     contentSecurityPolicy: secConfig.isProd
       ? {
-          directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-            fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-            imgSrc: ["'self'", 'data:', 'blob:'],
-            connectSrc: ["'self'", ...allowedOrigins],
-          },
-        }
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", 'https://checkout.razorpay.com'],
+          styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+          fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+          imgSrc: ["'self'", 'data:', 'blob:', 'https://res.cloudinary.com'],
+          frameSrc: ["'self'", 'https://api.razorpay.com', 'https://checkout.razorpay.com'],
+          connectSrc: ["'self'", 'https://api.razorpay.com', 'https://lumberjack.razorpay.com', ...allowedOrigins],
+        },
+      }
       : false,
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   })
@@ -95,13 +108,171 @@ app.use(cookieParser());
 app.use('/api', apiLimiter);
 app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
 
+function logPaymentAudit({ bookingId = null, orderId = null, paymentId = null, eventType, status, message }) {
+  try {
+    db.prepare(
+      `INSERT INTO payment_audit_logs (booking_id, order_id, payment_id, event_type, status, message) VALUES (?, ?, ?, ?, ?, ?)`
+    ).run(bookingId, orderId, paymentId, eventType, status, message);
+  } catch {
+    // Non-fatal audit insert
+  }
+}
+
+const CONFIRMED_STATUSES = new Set(['confirmed', 'locked', 'token_locked']);
+
+// Razorpay Webhook MUST use raw request body BEFORE global JSON parser
+app.post('/api/webhooks/razorpay', express.raw({ type: 'application/json', limit: '256kb' }), async (req, res) => {
+  const signature = req.headers['x-razorpay-signature'];
+  if (!verifyWebhookSignature(req.body, typeof signature === 'string' ? signature : '')) {
+    logPaymentAudit({ eventType: 'webhook.signature_failed', status: 'rejected', message: 'Invalid webhook signature' });
+    return res.status(400).json({ error: 'Invalid webhook signature' });
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(req.body.toString('utf8'));
+  } catch {
+    return res.status(400).json({ error: 'Malformed webhook payload' });
+  }
+
+  const eventType = payload?.event;
+  if (eventType !== 'payment.captured' && eventType !== 'payment.failed') {
+    return res.status(200).json({ ok: true, ignored: true });
+  }
+
+  const entity = payload?.payload?.payment?.entity;
+  const orderId = entity?.order_id;
+  const paymentId = entity?.id;
+  const eventId = req.headers['x-razorpay-event-id'] || `${eventType}:${paymentId || orderId || Date.now()}`;
+
+  if (!orderId || !paymentId) {
+    return res.status(400).json({ error: 'Missing order_id or payment_id in webhook payload' });
+  }
+
+  // Replay protection
+  const alreadyProcessed = db.prepare('SELECT event_id FROM webhook_events WHERE event_id = ?').get(String(eventId));
+  if (alreadyProcessed) {
+    return res.status(200).json({ ok: true, duplicate: true });
+  }
+
+  const paymentRecord = db.prepare('SELECT * FROM payments WHERE order_id = ?').get(orderId);
+  if (!paymentRecord) {
+    return res.status(404).json({ error: 'Unknown payment order' });
+  }
+
+  const booking = db.prepare('SELECT * FROM bookings WHERE id = ?').get(paymentRecord.booking_id);
+  if (!booking) {
+    return res.status(404).json({ error: 'Booking not found' });
+  }
+
+  if (eventType === 'payment.captured') {
+    if (
+      entity.status !== 'captured' ||
+      entity.currency !== 'INR' ||
+      Number(entity.amount) !== Number(paymentRecord.amount_inr) * 100
+    ) {
+      logPaymentAudit({
+        bookingId: booking.id,
+        orderId,
+        paymentId,
+        eventType,
+        status: 'rejected',
+        message: 'Amount, currency, or capture status mismatch',
+      });
+      return res.status(400).json({ error: 'Payment amount, currency, or status mismatch' });
+    }
+
+    db.exec('BEGIN IMMEDIATE');
+    db.prepare(`INSERT INTO webhook_events (event_id, event_type, order_id, payment_id) VALUES (?, ?, ?, ?)`).run(
+      String(eventId),
+      eventType,
+      orderId,
+      paymentId
+    );
+    if (!CONFIRMED_STATUSES.has(booking.status)) {
+      const finalReceipt = booking.receipt_code.replace(/^HOLD-/, 'FUS-');
+      db.prepare(`UPDATE payments SET status = 'verified', payment_id = ?, verified_at = datetime('now') WHERE id = ?`).run(
+        paymentId,
+        paymentRecord.id
+      );
+      db.prepare(`UPDATE bookings SET status = 'confirmed', hold_expires_at = NULL, receipt_code = ? WHERE id = ?`).run(
+        finalReceipt,
+        booking.id
+      );
+      if (!booking.receipt_code.startsWith('TOK-')) {
+        db.prepare(`UPDATE calendar_dates SET status = 'locked', hold_expires_at = NULL, receipt_code = ? WHERE date_str = ?`).run(
+          finalReceipt,
+          booking.event_date
+        );
+      }
+    }
+    db.exec('COMMIT');
+    logPaymentAudit({
+      bookingId: booking.id,
+      orderId,
+      paymentId,
+      eventType,
+      status: 'confirmed',
+      message: 'Webhook captured and confirmed booking',
+    });
+    return res.status(200).json({ ok: true });
+  }
+
+  // payment.failed — NEVER release an already confirmed/locked booking
+  db.exec('BEGIN IMMEDIATE');
+  db.prepare(`INSERT INTO webhook_events (event_id, event_type, order_id, payment_id) VALUES (?, ?, ?, ?)`).run(
+    String(eventId),
+    eventType,
+    orderId,
+    paymentId
+  );
+  if (!CONFIRMED_STATUSES.has(booking.status)) {
+    const reason = String(entity.error_description || entity.error_code || 'Payment failed').slice(0, 200);
+    db.prepare(`UPDATE payments SET status = 'failed', failure_reason = ? WHERE id = ?`).run(reason, paymentRecord.id);
+    if (booking.status === 'pending_payment') {
+      db.prepare(`UPDATE bookings SET status = 'expired', hold_expires_at = NULL WHERE id = ?`).run(booking.id);
+      if (!booking.receipt_code.startsWith('TOK-')) {
+        db.prepare(
+          `UPDATE calendar_dates SET status = 'available', bride_name = NULL, package_name = NULL, city = NULL, hold_expires_at = NULL, receipt_code = NULL WHERE date_str = ? AND status != 'locked'`
+        ).run(booking.event_date);
+      }
+    }
+  }
+  db.exec('COMMIT');
+  logPaymentAudit({
+    bookingId: booking.id,
+    orderId,
+    paymentId,
+    eventType,
+    status: 'failed',
+    message: 'Webhook recorded failed payment safely',
+  });
+  return res.status(200).json({ ok: true });
+});
+
+// Safe redirect for predefined image slots when hosted on Cloudinary (zero open redirect)
+app.get('/images/:slot', (req, res) => {
+  const { slot } = req.params;
+  if (!ALLOWED_SLOTS.has(slot)) {
+    return res.status(404).json({ error: 'Image not found' });
+  }
+  const cdnUrl = buildCloudinaryUrl(slot);
+  if (!cdnUrl) {
+    return res.status(404).json({ error: 'Image not found' });
+  }
+  return res.redirect(302, cdnUrl);
+});
+
 // 6 MB upload parser MUST be mounted BEFORE global 64 KB JSON parser
-app.post('/api/admin/upload-image', express.json({ limit: '6mb' }), requireAdmin, (req, res) => {
+app.post('/api/admin/upload-image', express.json({ limit: '6mb' }), requireAdmin, async (req, res) => {
   const parsed = uploadImageSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: 'Invalid upload slot or image payload.' });
   }
   const { slot, dataUrl } = parsed.data;
+  if (!ALLOWED_SLOTS.has(slot)) {
+    return res.status(400).json({ error: 'Invalid image slot.' });
+  }
   if (/svg/i.test(dataUrl.slice(0, 40)) || !/^data:image\/(jpeg|jpg|png|webp);base64,/.test(dataUrl)) {
     return res.status(400).json({ error: 'Unsupported image format. Only JPEG, PNG, and WebP are allowed.' });
   }
@@ -113,10 +284,37 @@ app.post('/api/admin/upload-image', express.json({ limit: '6mb' }), requireAdmin
     return res.status(400).json({ error: 'Image failed magic-byte signature validation or exceeds 5MB.' });
   }
 
+  const cloudCfg = getCloudinaryConfig();
+  if (cloudCfg.configured) {
+    try {
+      const uploaded = await uploadToCloudinary({ slot, dataUrl });
+      return res.json({
+        ok: true,
+        provider: 'cloudinary',
+        path: `/images/${slot}`,
+        secure_url: uploaded.secure_url,
+        public_id: uploaded.public_id,
+      });
+    } catch {
+      return res.status(502).json({ error: 'Cloud image upload failed. Existing image was preserved.' });
+    }
+  }
+
+  if (secConfig.isProd) {
+    return res.status(503).json({ error: 'Cloud image storage is not configured in production.' });
+  }
+
+  // Development-only local filesystem fallback
   const imagesDir = path.join(__dirname, '..', 'public', 'images');
   fs.mkdirSync(imagesDir, { recursive: true });
   fs.writeFileSync(path.join(imagesDir, slot), buffer);
-  res.json({ ok: true, path: `/images/${slot}` });
+  return res.json({
+    ok: true,
+    provider: 'local-dev',
+    path: `/images/${slot}`,
+    secure_url: `/images/${slot}`,
+    public_id: `local/${slot}`,
+  });
 });
 
 // Strict 64 KB limit for all other API JSON payloads
@@ -159,27 +357,45 @@ app.post('/api/admin/logout', (req, res) => {
   res.json({ ok: true });
 });
 
-const ALLOWED_SLOTS = new Set(['logo.jpg', 'bride-red.jpg', 'bride-pastel.jpg', 'engagement.jpg', 'groom.jpg', 'nails.jpg']);
+// Predefined image slots are enforced via ALLOWED_SLOTS from ./storage/cloudinary
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 function releaseExpiredHolds() {
   const now = Date.now();
-  const expired = db
+  const expiredDates = db
     .prepare(`SELECT date_str FROM calendar_dates WHERE status = 'hold' AND hold_expires_at IS NOT NULL AND hold_expires_at <= ?`)
     .all(now);
-  if (expired.length > 0) {
+  const expiredStandalone = db
+    .prepare(`SELECT id FROM bookings WHERE status IN ('hold', 'pending_payment') AND hold_expires_at IS NOT NULL AND hold_expires_at <= ?`)
+    .all(now);
+
+  if (expiredDates.length === 0 && expiredStandalone.length === 0) return;
+
+  db.exec('BEGIN IMMEDIATE');
+  try {
     const resetDate = db.prepare(
-      `UPDATE calendar_dates SET status = 'available', bride_name = NULL, package_name = NULL, city = NULL, hold_expires_at = NULL, receipt_code = NULL WHERE date_str = ?`
+      `UPDATE calendar_dates SET status = 'available', bride_name = NULL, package_name = NULL, city = NULL, hold_expires_at = NULL, receipt_code = NULL WHERE date_str = ? AND status = 'hold'`
     );
-    const expireBooking = db.prepare(`UPDATE bookings SET status = 'expired' WHERE event_date = ? AND status = 'hold'`);
+    const expireByDate = db.prepare(
+      `UPDATE bookings SET status = 'expired', hold_expires_at = NULL WHERE event_date = ? AND status IN ('hold', 'pending_payment')`
+    );
     const notifyWaitlist = db.prepare(`UPDATE waitlist SET notified = 1 WHERE date_str = ?`);
-    for (const row of expired) {
+    for (const row of expiredDates) {
       resetDate.run(row.date_str);
-      expireBooking.run(row.date_str);
+      expireByDate.run(row.date_str);
       notifyWaitlist.run(row.date_str);
     }
+
+    // Also expire standalone pending_payment / hold bookings (e.g. token bookings without calendar_dates row)
+    db.prepare(
+      `UPDATE bookings SET status = 'expired', hold_expires_at = NULL WHERE status IN ('hold', 'pending_payment') AND hold_expires_at IS NOT NULL AND hold_expires_at <= ?`
+    ).run(now);
+
+    db.exec('COMMIT');
+  } catch (err) {
+    try { db.exec('ROLLBACK'); } catch { /* ignore */ }
   }
 }
 
@@ -285,9 +501,34 @@ app.post('/api/bookings', writeLimiter, async (req, res) => {
   const travelCharge = mode === 'token' ? 0 : (CITY_TRAVEL_CATALOG[city] ?? 0);
   const totalPrice = basePrice + travelCharge;
 
-  // All pay/hold bridal bookings start in 'hold' until /api/payments/verify confirms signature
-  const initialStatus = mode === 'token' ? 'hold' : 'hold';
-  const holdExpiresAt = Date.now() + 48 * 3600 * 1000;
+  const idempotencyKey = typeof req.headers['idempotency-key'] === 'string'
+    ? req.headers['idempotency-key'].trim().slice(0, 100)
+    : null;
+
+  if (idempotencyKey) {
+    const existingByKey = db.prepare('SELECT * FROM bookings WHERE idempotency_key = ?').get(idempotencyKey);
+    if (existingByKey) {
+      const existingPay = db.prepare('SELECT * FROM payments WHERE booking_id = ? ORDER BY id DESC LIMIT 1').get(existingByKey.id);
+      return res.status(200).json({
+        booking: sanitizeBookingPublic(existingByKey),
+        receiptCode: existingByKey.receipt_code,
+        idempotentReplay: true,
+        payment: existingPay
+          ? {
+            provider: existingPay.provider,
+            orderId: existingPay.order_id,
+            amount: existingPay.amount_inr * 100,
+            currency: existingPay.currency,
+            status: existingPay.status,
+          }
+          : null,
+      });
+    }
+  }
+
+  // Canonical initial booking states: hold (48-hr unpaid) vs pending_payment (checkout initiated)
+  const initialStatus = mode === 'hold' ? 'hold' : 'pending_payment';
+  const holdExpiresAt = mode === 'hold' ? Date.now() + 48 * 3600 * 1000 : Date.now() + 30 * 60 * 1000;
   const suffix = String(Math.floor(1000 + Math.random() * 9000));
   const receiptCode = mode === 'token' ? `TOK-${suffix}` : `HOLD-${suffix}`;
 
@@ -303,7 +544,7 @@ app.post('/api/bookings', writeLimiter, async (req, res) => {
     }
 
     const artistConflict = db
-      .prepare(`SELECT id FROM bookings WHERE event_date = ? AND artist_name LIKE ? AND status IN ('locked', 'hold')`)
+      .prepare(`SELECT id FROM bookings WHERE event_date = ? AND artist_name LIKE ? AND status IN ('confirmed', 'locked', 'hold', 'pending_payment')`)
       .get(event_date, `${artistBase}%`);
     if (mode !== 'token' && artistConflict) {
       db.exec('ROLLBACK');
@@ -311,15 +552,15 @@ app.post('/api/bookings', writeLimiter, async (req, res) => {
     }
 
     const existingDate = db.prepare('SELECT * FROM calendar_dates WHERE date_str = ?').get(event_date);
-    if (mode !== 'token' && existingDate && existingDate.status === 'locked') {
+    if (mode !== 'token' && existingDate && (existingDate.status === 'locked' || existingDate.status === 'confirmed')) {
       db.exec('ROLLBACK');
       return res.status(409).json({ error: 'This date is already locked.' });
     }
 
     const info = db
       .prepare(`
-        INSERT INTO bookings (customer_name, phone, city, event_date, package_name, makeup_type, lehenga_colour, jewellery, artist_name, travel_charge, total_price, advance_amount, status, hold_expires_at, receipt_code)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO bookings (customer_name, phone, city, event_date, package_name, makeup_type, lehenga_colour, jewellery, artist_name, travel_charge, total_price, advance_amount, status, hold_expires_at, receipt_code, idempotency_key)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `)
       .run(
         customer_name,
@@ -336,15 +577,16 @@ app.post('/api/bookings', writeLimiter, async (req, res) => {
         advanceAmount,
         initialStatus,
         holdExpiresAt,
-        receiptCode
+        receiptCode,
+        idempotencyKey
       );
 
     if (mode !== 'token' && existingDate) {
       db.prepare(`
         UPDATE calendar_dates
-        SET status = ?, bride_name = ?, package_name = ?, city = ?, hold_expires_at = ?, receipt_code = ?
+        SET status = 'hold', bride_name = ?, package_name = ?, city = ?, hold_expires_at = ?, receipt_code = ?
         WHERE date_str = ?
-      `).run(initialStatus, customer_name, package_name, city, holdExpiresAt, receiptCode, event_date);
+      `).run(customer_name, resolvedPackageName, city, holdExpiresAt, receiptCode, event_date);
     }
 
     db.prepare(`
@@ -357,7 +599,7 @@ app.post('/api/bookings', writeLimiter, async (req, res) => {
       city,
       event_date,
       resolvedPackageName,
-      '48-Hr Hold',
+      mode === 'hold' ? '48-Hr Hold' : 'Pending Payment',
       `${lehenga_colour} + ${jewellery} · Receipt ${receiptCode}`
     );
 
@@ -376,10 +618,33 @@ app.post('/api/bookings', writeLimiter, async (req, res) => {
       customerName: customer_name,
     });
     db.prepare(
-      `INSERT INTO payments (booking_id, provider, order_id, amount_inr, status) VALUES (?, ?, ?, ?, 'created')`
+      `INSERT INTO payments (booking_id, provider, order_id, amount_inr, currency, status) VALUES (?, ?, ?, ?, 'INR', 'created')`
     ).run(createdBooking.id, payment.provider || 'local-simulation', payment.orderId, advanceAmount);
+    logPaymentAudit({
+      bookingId: createdBooking.id,
+      orderId: payment.orderId,
+      eventType: 'order.created',
+      status: 'created',
+      message: `Created payment order for ₹${advanceAmount}`,
+    });
   } catch (err) {
-    return res.status(502).json({ error: 'Payment gateway unavailable. Hold preserved for 48 hours.' });
+    db.exec('BEGIN IMMEDIATE');
+    if (createdBooking.status === 'pending_payment') {
+      db.prepare(`UPDATE bookings SET status = 'expired', hold_expires_at = NULL WHERE id = ?`).run(createdBooking.id);
+      if (mode !== 'token') {
+        db.prepare(
+          `UPDATE calendar_dates SET status = 'available', bride_name = NULL, package_name = NULL, city = NULL, hold_expires_at = NULL, receipt_code = NULL WHERE date_str = ? AND receipt_code = ?`
+        ).run(event_date, receiptCode);
+      }
+    }
+    db.exec('COMMIT');
+    logPaymentAudit({
+      bookingId: createdBooking.id,
+      eventType: 'order.failed',
+      status: 'expired',
+      message: 'Razorpay order creation failed; temporary hold released',
+    });
+    return res.status(502).json({ error: 'Payment gateway unavailable. Temporary hold released.' });
   }
 
   await sendWhatsAppTemplate({
@@ -426,18 +691,62 @@ app.post('/api/payments/verify', writeLimiter, async (req, res) => {
   if (!paymentRecord) {
     return res.status(404).json({ error: 'Payment order does not match this booking.' });
   }
+
+  // Idempotent retry if the same payment was already verified
   if (paymentRecord.status === 'verified') {
-    return res.status(409).json({ error: 'Payment order has already been verified.' });
+    if (paymentRecord.payment_id === paymentId) {
+      const existingBk = db.prepare('SELECT * FROM bookings WHERE id = ?').get(booking_id);
+      return res.json({
+        ok: true,
+        verified: true,
+        alreadyVerified: true,
+        booking: sanitizeBookingPublic(existingBk),
+        receiptCode: existingBk.receipt_code,
+      });
+    }
+    return res.status(409).json({ error: 'Booking payment already verified under a different payment ID.' });
   }
 
   if (!verifyRazorpaySignature({ orderId, paymentId, signature })) {
+    logPaymentAudit({ bookingId: booking_id, orderId, paymentId, eventType: 'verify.signature_failed', status: 'rejected', message: 'Invalid signature' });
     return res.status(400).json({ error: 'Invalid payment signature' });
+  }
+
+  // Fetch authoritative payment state from Razorpay (or dev simulation)
+  let rzpPayment;
+  try {
+    rzpPayment = await fetchRazorpayPayment({
+      paymentId,
+      orderId,
+      expectedAmountPaise: paymentRecord.amount_inr * 100,
+    });
+  } catch {
+    return res.status(502).json({ error: 'Unable to verify payment with payment gateway.' });
+  }
+
+  if (
+    !rzpPayment ||
+    rzpPayment.id !== paymentId ||
+    rzpPayment.order_id !== orderId ||
+    rzpPayment.currency !== 'INR' ||
+    Number(rzpPayment.amount) !== Number(paymentRecord.amount_inr) * 100 ||
+    rzpPayment.status !== 'captured'
+  ) {
+    logPaymentAudit({
+      bookingId: booking_id,
+      orderId,
+      paymentId,
+      eventType: 'verify.gateway_mismatch',
+      status: 'rejected',
+      message: `Rejected gateway status=${rzpPayment?.status || 'unknown'}`,
+    });
+    return res.status(400).json({ error: 'Payment is not captured or does not match order amount/currency.' });
   }
 
   const booking = db.prepare('SELECT * FROM bookings WHERE id = ?').get(booking_id);
   if (!booking) return res.status(404).json({ error: 'Booking not found' });
 
-  const finalStatus = booking.receipt_code.startsWith('TOK-') ? 'token_locked' : 'locked';
+  const finalStatus = 'confirmed';
   const finalReceipt = booking.receipt_code.replace(/^HOLD-/, 'FUS-');
 
   db.exec('BEGIN IMMEDIATE');
@@ -450,13 +759,22 @@ app.post('/api/payments/verify', writeLimiter, async (req, res) => {
     finalReceipt,
     booking_id
   );
-  if (finalStatus === 'locked') {
+  if (!booking.receipt_code.startsWith('TOK-')) {
     db.prepare(`UPDATE calendar_dates SET status = 'locked', hold_expires_at = NULL, receipt_code = ? WHERE date_str = ?`).run(
       finalReceipt,
       booking.event_date
     );
   }
   db.exec('COMMIT');
+
+  logPaymentAudit({
+    bookingId: booking_id,
+    orderId,
+    paymentId,
+    eventType: 'verify.captured',
+    status: 'confirmed',
+    message: `Booking confirmed (${finalReceipt})`,
+  });
 
   await sendWhatsAppTemplate({
     phone: booking.phone,
@@ -586,7 +904,7 @@ app.get('/api/journey', (req, res) => {
     activeBooking = db.prepare('SELECT id, customer_name, city, event_date, package_name, artist_name, advance_amount, total_price, status, reschedule_count, receipt_code FROM bookings WHERE id = ?').get(tokenData.bookingId);
     prepForm = db.prepare('SELECT * FROM bride_prep_forms WHERE booking_id = ? ORDER BY id DESC LIMIT 1').get(tokenData.bookingId);
   } else if (adminData?.role === 'owner') {
-    activeBooking = db.prepare(`SELECT id, customer_name, city, event_date, package_name, artist_name, advance_amount, total_price, status, reschedule_count, receipt_code FROM bookings WHERE status IN ('locked', 'hold') ORDER BY id DESC LIMIT 1`).get();
+    activeBooking = db.prepare(`SELECT id, customer_name, city, event_date, package_name, artist_name, advance_amount, total_price, status, reschedule_count, receipt_code FROM bookings WHERE status IN ('confirmed', 'locked', 'hold', 'pending_payment') ORDER BY id DESC LIMIT 1`).get();
     if (activeBooking) {
       prepForm = db.prepare('SELECT * FROM bride_prep_forms WHERE booking_id = ? ORDER BY id DESC LIMIT 1').get(activeBooking.id);
     }
@@ -682,9 +1000,9 @@ app.get('/api/admin/overview', requireAdmin, (_req, res) => {
   const leads = db.prepare('SELECT * FROM leads ORDER BY id DESC').all();
   const artists = db.prepare('SELECT * FROM artists ORDER BY id ASC').all();
   const waitlist = db.prepare('SELECT * FROM waitlist ORDER BY id DESC').all();
-  const pendingTimers = bookings.filter((b) => b.status === 'hold' && b.hold_expires_at);
+  const pendingTimers = bookings.filter((b) => (b.status === 'hold' || b.status === 'pending_payment') && b.hold_expires_at);
   const advanceCollected = bookings
-    .filter((b) => b.status === 'locked' || b.status === 'token_locked')
+    .filter((b) => b.status === 'confirmed' || b.status === 'locked' || b.status === 'token_locked')
     .reduce((sum, b) => sum + Number(b.advance_amount || 0), 0);
   const totalRevenueProjected = bookings.reduce((sum, b) => sum + Number(b.total_price || 0), 0);
 

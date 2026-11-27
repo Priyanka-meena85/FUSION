@@ -30,10 +30,13 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, onUnau
           credentials: 'include',
           body: JSON.stringify({ slot, dataUrl: reader.result }),
         });
+        const data = await res.json().catch(() => ({}));
         if (res.ok) {
-          setUploadStatus(`Saved ${slot} — refresh any page to see your real photo!`);
+          setUploadStatus(
+            `Saved ${slot} (${data.provider || 'storage'}) — ${data.secure_url || data.path}`
+          );
         } else {
-          setUploadStatus('Upload failed. Ensure file is an image.');
+          setUploadStatus(data.error || 'Upload failed. Ensure file is an image.');
         }
       } catch {
         setUploadStatus('Upload failed.');

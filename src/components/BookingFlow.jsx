@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { PACKAGES } from '../data/salonData';
+import { openRazorpayCheckout } from '../utils/razorpayCheckout';
 import { CssCalendar, CssCheck, CssClock, CssLock, CssSparkle } from './CssIcons';
 
 const CITY_TRAVEL = [
@@ -35,6 +36,7 @@ export default function BookingFlow({ preselectedLook, selectedArtist, onBooking
   const [waitlistTargetDate, setWaitlistTargetDate] = useState(null);
   const [waitlistJoined, setWaitlistJoined] = useState(false);
   const [upsellAdded, setUpsellAdded] = useState([]);
+  const pendingAttemptRef = useRef(null);
 
   const activeArtist = selectedArtist || preselectedLook?.artist?.split(' (')[0] || 'Riya Sen';
 
@@ -101,13 +103,27 @@ export default function BookingFlow({ preselectedLook, selectedArtist, onBooking
   };
 
   const handlePayAdvance = async (mode = 'pay') => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
     setErrorMsg('');
     setUpsellAdded([]);
+
+    const attemptSignature = `${selectedDate}|${selectedPkg.id}|${cityObj.city}|${mode}|${brideName}|${phone}|${activeArtist}`;
+    if (!pendingAttemptRef.current || pendingAttemptRef.current.signatureKey !== attemptSignature) {
+      pendingAttemptRef.current = {
+        signatureKey: attemptSignature,
+        idempotencyKey: crypto.randomUUID(),
+      };
+    }
+    const idempotencyKey = pendingAttemptRef.current.idempotencyKey;
+
     try {
       const res = await fetch('/api/bookings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKey,
+        },
         credentials: 'include',
         body: JSON.stringify({
           customer_name: brideName,
@@ -129,16 +145,22 @@ export default function BookingFlow({ preselectedLook, selectedArtist, onBooking
         let finalBooking = data.booking;
         let finalReceipt = data.receiptCode;
 
-        if (mode === 'pay' && data.payment?.orderId && data.payment?.signature) {
+        if (mode === 'pay') {
+          const rzpResponse = await openRazorpayCheckout({
+            payment: data.payment,
+            description: `${selectedPkg.name} Advance (${selectedDate})`,
+            prefill: { name: brideName, contact: phone },
+          });
+
           const verifyRes = await fetch('/api/payments/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
             body: JSON.stringify({
               booking_id: data.booking.id,
-              orderId: data.payment.orderId,
-              paymentId: data.payment.paymentId || `pay_${data.receiptCode}`,
-              signature: data.payment.signature,
+              orderId: rzpResponse.razorpay_order_id,
+              paymentId: rzpResponse.razorpay_payment_id,
+              signature: rzpResponse.razorpay_signature,
             }),
           });
           const verifyData = await verifyRes.json();
@@ -151,12 +173,13 @@ export default function BookingFlow({ preselectedLook, selectedArtist, onBooking
           finalReceipt = verifyData.receiptCode;
         }
 
+        pendingAttemptRef.current = null;
         setConfirmation({ ...finalBooking, receiptCode: finalReceipt, mode });
         await fetchCalendar();
         if (onBookingSuccess) onBookingSuccess();
       }
-    } catch {
-      setErrorMsg('Server connection error.');
+    } catch (err) {
+      setErrorMsg(err?.message || 'Payment or server connection error.');
     } finally {
       setIsSubmitting(false);
     }

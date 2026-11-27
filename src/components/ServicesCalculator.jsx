@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { SERVICES_DATA } from '../data/salonData';
+import { openRazorpayCheckout } from '../utils/razorpayCheckout';
 import { CssCheck, CssSparkle } from './CssIcons';
 
 const TABS = ['Hair', 'Skin', 'Makeup', 'Groom'];
@@ -10,7 +11,10 @@ export default function ServicesCalculator({ onTokenBooked }) {
   const [selectedIds, setSelectedIds] = useState(['haircut', 'facial']);
   const [displayTotal, setDisplayTotal] = useState(1998);
   const [tokenReceipt, setTokenReceipt] = useState(null);
+  const [tokenError, setTokenError] = useState('');
+  const [isLocking, setIsLocking] = useState(false);
   const prevTotalRef = useRef(1998);
+  const pendingAttemptRef = useRef(null);
 
   const allServices = Object.values(SERVICES_DATA).flat();
   const total = allServices
@@ -35,7 +39,16 @@ export default function ServicesCalculator({ onTokenBooked }) {
   };
 
   const handleLockToken = async () => {
-    if (selectedIds.length === 0) return;
+    if (selectedIds.length === 0 || isLocking) return;
+    setIsLocking(true);
+    setTokenError('');
+    const attemptSig = [...selectedIds].sort().join(',');
+    if (!pendingAttemptRef.current || pendingAttemptRef.current.signatureKey !== attemptSig) {
+      pendingAttemptRef.current = {
+        signatureKey: attemptSig,
+        idempotencyKey: crypto.randomUUID(),
+      };
+    }
     try {
       const names = allServices
         .filter((s) => selectedIds.includes(s.id))
@@ -43,7 +56,10 @@ export default function ServicesCalculator({ onTokenBooked }) {
         .join(', ');
       const res = await fetch('/api/bookings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': pendingAttemptRef.current.idempotencyKey,
+        },
         credentials: 'include',
         body: JSON.stringify({
           customer_name: 'Salon Walk-in Client',
@@ -57,12 +73,40 @@ export default function ServicesCalculator({ onTokenBooked }) {
         }),
       });
       const data = await res.json();
-      if (res.ok) {
-        setTokenReceipt(data.receiptCode);
-        if (onTokenBooked) onTokenBooked();
+      if (!res.ok) {
+        setTokenError(data.error || 'Could not initiate token booking.');
+        return;
       }
-    } catch {
-      setTokenReceipt('TOK-199-AJM');
+
+      const rzpResponse = await openRazorpayCheckout({
+        payment: data.payment,
+        description: '₹199 Daily Salon Slot Token',
+        prefill: { name: 'Salon Walk-in Client', contact: '+91 98290 11223' },
+      });
+
+      const verifyRes = await fetch('/api/payments/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          booking_id: data.booking.id,
+          orderId: rzpResponse.razorpay_order_id,
+          paymentId: rzpResponse.razorpay_payment_id,
+          signature: rzpResponse.razorpay_signature,
+        }),
+      });
+      const verifyData = await verifyRes.json();
+      if (!verifyRes.ok) {
+        setTokenError(verifyData.error || 'Token payment verification failed.');
+        return;
+      }
+      pendingAttemptRef.current = null;
+      setTokenReceipt(verifyData.receiptCode);
+      if (onTokenBooked) onTokenBooked();
+    } catch (err) {
+      setTokenError(err?.message || 'Token checkout cancelled or failed.');
+    } finally {
+      setIsLocking(false);
     }
   };
 
@@ -172,6 +216,12 @@ export default function ServicesCalculator({ onTokenBooked }) {
             >
               {tokenReceipt ? 'Slot Locked!' : 'Lock Slot With ₹199 Token'}
             </button>
+
+            {tokenError && (
+              <p className="mt-3 text-xs text-red-300 bg-red-950/60 border border-red-400/40 rounded-xl p-2.5">
+                {tokenError}
+              </p>
+            )}
 
             {tokenReceipt && (
               <div className="mt-3 rounded-xl bg-emerald-950/80 border border-emerald-400/50 p-3 text-xs text-emerald-200 flex items-center justify-between">

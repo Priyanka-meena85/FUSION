@@ -44,7 +44,7 @@ async function createPaymentOrder({ amountInInr, receiptCode, customerName }) {
     throw new Error(`Razorpay order creation failed with status ${res.status}`);
   }
   const data = await res.json();
-  return { provider: 'razorpay', orderId: data.id, ...data };
+  return { provider: 'razorpay', keyId, orderId: data.id, ...data };
 }
 
 function verifyRazorpaySignature({ orderId, paymentId, signature }) {
@@ -62,6 +62,51 @@ function verifyRazorpaySignature({ orderId, paymentId, signature }) {
   const expected = crypto
     .createHmac('sha256', keySecret)
     .update(`${orderId}|${paymentId}`)
+    .digest('hex');
+  return timingSafeMatch(expected, signature);
+}
+
+async function fetchRazorpayPayment({ paymentId, orderId, expectedAmountPaise }) {
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const isProd = process.env.NODE_ENV === 'production';
+
+  if (!keyId || !keySecret) {
+    if (isProd) {
+      throw new Error('Razorpay credentials are not configured in production.');
+    }
+    // In development simulation, only sim_pay_* IDs are recognized as captured
+    if (typeof paymentId === 'string' && paymentId.startsWith('sim_pay_')) {
+      return {
+        id: paymentId,
+        order_id: orderId,
+        amount: expectedAmountPaise,
+        currency: 'INR',
+        status: 'captured',
+      };
+    }
+    return null;
+  }
+
+  const auth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
+  const res = await fetch(`https://api.razorpay.com/v1/payments/${encodeURIComponent(paymentId)}`, {
+    method: 'GET',
+    headers: { Authorization: `Basic ${auth}` },
+  });
+  if (!res.ok) {
+    return null;
+  }
+  return res.json();
+}
+
+function verifyWebhookSignature(rawBodyBuffer, signature) {
+  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  if (!webhookSecret || !Buffer.isBuffer(rawBodyBuffer) || typeof signature !== 'string') {
+    return false;
+  }
+  const expected = crypto
+    .createHmac('sha256', webhookSecret)
+    .update(rawBodyBuffer)
     .digest('hex');
   return timingSafeMatch(expected, signature);
 }
@@ -91,4 +136,10 @@ async function sendWhatsAppTemplate({ phone, templateName, params = [] }) {
   return { delivered: res.ok, provider: 'whatsapp-business-api' };
 }
 
-module.exports = { createPaymentOrder, verifyRazorpaySignature, sendWhatsAppTemplate };
+module.exports = {
+  createPaymentOrder,
+  verifyRazorpaySignature,
+  fetchRazorpayPayment,
+  verifyWebhookSignature,
+  sendWhatsAppTemplate,
+};
