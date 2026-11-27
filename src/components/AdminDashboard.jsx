@@ -10,7 +10,7 @@ function formatTimer(expiresAt, now) {
   return [h, m, sec].map((v) => String(v).padStart(2, '0')).join(':');
 }
 
-export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminToken, onUnauthorized, onLogout }) {
+export default function AdminDashboard({ isOpen, onClose, refreshTrigger, onUnauthorized, onLogout }) {
   const [data, setData] = useState(null);
   const [selectedBride, setSelectedBride] = useState(null);
   const [activeTab, setActiveTab] = useState('operations'); // 'operations' | 'reports' | 'pro' | 'media'
@@ -26,10 +26,8 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
       try {
         const res = await fetch('/api/admin/upload-image', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(adminToken ? { 'x-admin-token': adminToken } : {}),
-          },
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({ slot, dataUrl: reader.result }),
         });
         if (res.ok) {
@@ -46,7 +44,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
 
   const loadOverview = () => {
     fetch('/api/admin/overview', {
-      headers: adminToken ? { 'x-admin-token': adminToken } : {},
+      credentials: 'include',
     })
       .then((r) => {
         if (r.status === 401 && onUnauthorized) {
@@ -74,33 +72,32 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
     return () => clearInterval(t);
   }, []);
 
-  const authHeaders = adminToken ? { 'x-admin-token': adminToken } : {};
-
   const handleMarkPaid = async (bookingId) => {
-    await fetch(`/api/bookings/${bookingId}/pay`, { method: 'POST', headers: authHeaders });
+    await fetch(`/api/bookings/${bookingId}/pay`, { method: 'POST', credentials: 'include' });
     loadOverview();
   };
 
   const handleNotifyWaitlist = async (id) => {
-    await fetch(`/api/waitlist/${id}/notify`, { method: 'POST', headers: authHeaders });
+    await fetch(`/api/waitlist/${id}/notify`, { method: 'POST', credentials: 'include' });
     loadOverview();
   };
 
   const handleToggleArtistLeave = async (artistId) => {
     await fetch(`/api/artists/${artistId}/leave`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...authHeaders },
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ date_str: '2026-02-18' }),
     });
     loadOverview();
   };
 
   return (
-    <section id="admin" className="reveal-section py-14 sm:py-18 px-4 bg-[#0B0B0C] text-[#FAF6F0]">
+    <section id="admin" className="reveal-section py-14 sm:py-18 px-4 bg-[#121212] text-[#FFF8F0]">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#EAD28B] bg-[#9E1B2B] px-3.5 py-1 rounded-full border border-[#D4AF37]/45">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#F5E08E] bg-[#B01E2E] px-3.5 py-1 rounded-full border border-[#D4AF37]/45">
               <CssCrown /> Owner Command Center
             </span>
             <h2 className="font-display text-2xl sm:text-4xl font-bold mt-3">
@@ -113,8 +110,8 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
               onClick={() => setActiveTab('operations')}
               className={`px-4 py-2 rounded-full text-xs font-bold border cursor-pointer ${
                 activeTab === 'operations'
-                  ? 'bg-[#D4AF37] text-[#0B0B0C] border-white'
-                  : 'border-[#D4AF37]/40 text-[#EAD28B]'
+                  ? 'bg-[#D4AF37] text-[#121212] border-white'
+                  : 'border-[#D4AF37]/40 text-[#F5E08E]'
               }`}
             >
               Live Operations
@@ -124,8 +121,8 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
               onClick={() => setActiveTab('reports')}
               className={`px-4 py-2 rounded-full text-xs font-bold border cursor-pointer ${
                 activeTab === 'reports'
-                  ? 'bg-[#D4AF37] text-[#0B0B0C] border-white'
-                  : 'border-[#D4AF37]/40 text-[#EAD28B]'
+                  ? 'bg-[#D4AF37] text-[#121212] border-white'
+                  : 'border-[#D4AF37]/40 text-[#F5E08E]'
               }`}
             >
               Monthly Reports
@@ -135,8 +132,8 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
               onClick={() => setActiveTab('pro')}
               className={`px-4 py-2 rounded-full text-xs font-bold border cursor-pointer ${
                 activeTab === 'pro'
-                  ? 'bg-[#9E1B2B] text-white border-[#D4AF37]'
-                  : 'border-[#D4AF37]/40 text-[#EAD28B]'
+                  ? 'bg-[#B01E2E] text-white border-[#D4AF37]'
+                  : 'border-[#D4AF37]/40 text-[#F5E08E]'
               }`}
             >
               Owner Pro Suite
@@ -146,8 +143,8 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
               onClick={() => setActiveTab('media')}
               className={`px-4 py-2 rounded-full text-xs font-bold border cursor-pointer ${
                 activeTab === 'media'
-                  ? 'bg-[#D4AF37] text-[#0B0B0C] border-white'
-                  : 'border-[#D4AF37]/40 text-[#EAD28B]'
+                  ? 'bg-[#D4AF37] text-[#121212] border-white'
+                  : 'border-[#D4AF37]/40 text-[#F5E08E]'
               }`}
             >
               Upload IG Photos
@@ -165,7 +162,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-full border border-[#D4AF37] text-xs font-bold text-[#EAD28B] cursor-pointer"
+                className="px-4 py-2 rounded-full border border-[#D4AF37] text-xs font-bold text-[#F5E08E] cursor-pointer"
               >
                 Close
               </button>
@@ -176,21 +173,21 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
         {/* 3 KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-7">
           <div className="rounded-2xl bg-white/5 border border-[#D4AF37]/35 p-5">
-            <span className="text-xs uppercase tracking-wider text-[#FAF6F0]/60">Total Bookings</span>
-            <div className="font-display text-3xl font-bold text-[#EAD28B] mt-1">
+            <span className="text-xs uppercase tracking-wider text-[#FFF8F0]/60">Total Bookings</span>
+            <div className="font-display text-3xl font-bold text-[#F5E08E] mt-1">
               {data?.stats?.todayBookings ?? 5}
             </div>
             <span className="text-[11px] text-emerald-400">Live from SQLite DB</span>
           </div>
           <div className="rounded-2xl bg-white/5 border border-[#D4AF37]/35 p-5">
-            <span className="text-xs uppercase tracking-wider text-[#FAF6F0]/60">Advance Collected</span>
-            <div className="font-display text-3xl font-bold text-[#EAD28B] mt-1">
+            <span className="text-xs uppercase tracking-wider text-[#FFF8F0]/60">Advance Collected</span>
+            <div className="font-display text-3xl font-bold text-[#F5E08E] mt-1">
               ₹{(data?.stats?.advanceCollected ?? 22500).toLocaleString('en-IN')}
             </div>
-            <span className="text-[11px] text-[#FAF6F0]/60">UPI &amp; ₹199 Token Advances</span>
+            <span className="text-[11px] text-[#FFF8F0]/60">UPI &amp; ₹199 Token Advances</span>
           </div>
           <div className="rounded-2xl bg-white/5 border border-[#D4AF37]/35 p-5">
-            <span className="text-xs uppercase tracking-wider text-[#FAF6F0]/60">Pending 48-Hr Timers</span>
+            <span className="text-xs uppercase tracking-wider text-[#FFF8F0]/60">Pending 48-Hr Timers</span>
             <div className="font-display text-3xl font-bold text-amber-300 mt-1">
               {data?.stats?.pendingTimersCount ?? 2}
             </div>
@@ -201,7 +198,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
         {activeTab === 'media' ? (
           <div className="rounded-3xl bg-white/5 border border-[#D4AF37]/45 p-6 space-y-4">
             <div>
-              <h3 className="font-display text-xl font-bold text-[#EAD28B]">
+              <h3 className="font-display text-xl font-bold text-[#F5E08E]">
                 1-Click Instagram Photo Uploader (No Code Needed)
               </h3>
               <p className="text-xs text-white/70 mt-1">
@@ -226,13 +223,13 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
                   key={item.slot}
                   className="rounded-2xl bg-black/35 border border-[#D4AF37]/35 p-4 flex flex-col gap-2 cursor-pointer hover:border-[#D4AF37]"
                 >
-                  <span className="text-xs font-bold text-[#EAD28B]">{item.label}</span>
+                  <span className="text-xs font-bold text-[#F5E08E]">{item.label}</span>
                   <span className="text-[10px] text-white/60">Target: /images/{item.slot}</span>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleImageUpload(item.slot, e.target.files?.[0])}
-                    className="text-[11px] text-white/80 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-[#9E1B2B] file:text-white file:text-[10px] file:font-bold"
+                    className="text-[11px] text-white/80 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-[#B01E2E] file:text-white file:text-[10px] file:font-bold"
                   />
                 </label>
               ))}
@@ -242,7 +239,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
           <div className="grid md:grid-cols-2 gap-6">
             {/* #17 Artist Performance + #23 Staff Commission */}
             <div className="rounded-3xl bg-white/5 border border-[#D4AF37]/35 p-5 space-y-3">
-              <h3 className="font-display text-lg font-bold text-[#EAD28B]">
+              <h3 className="font-display text-lg font-bold text-[#F5E08E]">
                 17 &amp; 23. Artist Performance &amp; Commission
               </h3>
               {[
@@ -269,14 +266,14 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
             <div className="rounded-3xl bg-white/5 border border-[#D4AF37]/35 p-5 space-y-4 text-xs">
               <div className="flex items-center justify-between bg-black/35 p-3 rounded-xl">
                 <div>
-                  <div className="font-bold text-[#EAD28B]">18. Peak Wedding Season Smart Pricing</div>
+                  <div className="font-bold text-[#F5E08E]">18. Peak Wedding Season Smart Pricing</div>
                   <div className="text-[11px] text-white/65">Auto-adjusts Feb/Nov rates (+10% peak / off-season offers)</div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setPeakPricingOn((p) => !p)}
                   className={`px-3 py-1.5 rounded-full font-bold cursor-pointer ${
-                    peakPricingOn ? 'bg-[#9E1B2B] text-white border border-[#D4AF37]' : 'bg-stone-700 text-white'
+                    peakPricingOn ? 'bg-[#B01E2E] text-white border border-[#D4AF37]' : 'bg-stone-700 text-white'
                   }`}
                 >
                   {peakPricingOn ? 'Peak ON' : 'Standard'}
@@ -285,20 +282,20 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
 
               <div className="flex items-center justify-between bg-black/35 p-3 rounded-xl">
                 <div>
-                  <div className="font-bold text-[#EAD28B]">19. Cancelled Slot Flash Sale</div>
+                  <div className="font-bold text-[#F5E08E]">19. Cancelled Slot Flash Sale</div>
                   <div className="text-[11px] text-white/65">Blast 50 local clients: Today 4 PM Slot 20% OFF</div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setFlashSent(true)}
-                  className="px-3 py-1.5 rounded-full bg-[#D4AF37] text-[#0B0B0C] font-bold cursor-pointer"
+                  className="px-3 py-1.5 rounded-full bg-[#D4AF37] text-[#121212] font-bold cursor-pointer"
                 >
                   {flashSent ? 'Sent to 50!' : 'Send Flash Sale'}
                 </button>
               </div>
 
               <div className="bg-black/35 p-3 rounded-xl space-y-1">
-                <div className="font-bold text-[#EAD28B]">22. Competitor Price Watch (Ajmer)</div>
+                <div className="font-bold text-[#F5E08E]">22. Competitor Price Watch (Ajmer)</div>
                 <div className="flex justify-between text-white/80">
                   <span>HD Bridal (Fusion vs Local Luxury)</span>
                   <strong className="text-emerald-400">₹25k vs ₹28k (Save ₹3,000)</strong>
@@ -307,7 +304,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
 
               <div className="bg-red-950/60 border border-red-400/40 p-3 rounded-xl flex justify-between items-center">
                 <span><strong>24. Inventory Alert:</strong> Setting Spray low (2 days left)</span>
-                <span className="px-2 py-0.5 rounded-full bg-[#9E1B2B] text-white text-[10px] font-bold">Reorder</span>
+                <span className="px-2 py-0.5 rounded-full bg-[#B01E2E] text-white text-[10px] font-bold">Reorder</span>
               </div>
             </div>
           </div>
@@ -315,11 +312,11 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
           /* #45 Monthly Reports + #34 Artist Leave Calendar */
           <div className="grid md:grid-cols-2 gap-6">
             <div className="rounded-3xl bg-white/5 border border-[#D4AF37]/35 p-6 space-y-4">
-              <h3 className="font-display text-xl font-bold text-[#EAD28B]">Feb 2026 Business Report</h3>
+              <h3 className="font-display text-xl font-bold text-[#F5E08E]">Feb 2026 Business Report</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between py-2 border-b border-white/10">
                   <span className="text-white/70">Projected Monthly Revenue</span>
-                  <span className="font-bold text-[#EAD28B]">
+                  <span className="font-bold text-[#F5E08E]">
                     ₹{(data?.stats?.totalRevenueProjected ?? 113000).toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -335,7 +332,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
             </div>
 
             <div className="rounded-3xl bg-white/5 border border-[#D4AF37]/35 p-6 space-y-3">
-              <h3 className="font-display text-xl font-bold text-[#EAD28B]">Artist Leave Calendar</h3>
+              <h3 className="font-display text-xl font-bold text-[#F5E08E]">Artist Leave Calendar</h3>
               <p className="text-xs text-white/65">
                 Toggle leave on 18 Feb to automatically block that artist&apos;s slot in the booking flow.
               </p>
@@ -352,7 +349,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
                         type="button"
                         onClick={() => handleToggleArtistLeave(a.id)}
                         className={`px-3 py-1.5 rounded-full font-bold cursor-pointer ${
-                          onLeave18 ? 'bg-red-600 text-white' : 'bg-[#D4AF37] text-[#0B0B0C]'
+                          onLeave18 ? 'bg-red-600 text-white' : 'bg-[#D4AF37] text-[#121212]'
                         }`}
                       >
                         {onLeave18 ? 'On Leave 18 Feb' : 'Toggle 18 Feb Leave'}
@@ -368,7 +365,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
             <div className="lg:col-span-7 space-y-6">
               {/* Pending 48-Hr Timers */}
               <div className="rounded-3xl bg-white/5 border border-[#D4AF37]/30 p-5">
-                <h3 className="font-display text-lg font-bold text-[#EAD28B] mb-3 flex items-center gap-2">
+                <h3 className="font-display text-lg font-bold text-[#F5E08E] mb-3 flex items-center gap-2">
                   <CssClock /> Pending 48-Hr Hold Timers
                 </h3>
                 <div className="space-y-2.5">
@@ -382,7 +379,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
                       >
                         <div>
                           <div className="text-sm font-bold">{b.customer_name} · {b.city}</div>
-                          <div className="text-[11px] text-[#FAF6F0]/70">
+                          <div className="text-[11px] text-[#FFF8F0]/70">
                             {b.event_date} · {b.package_name} (Adv ₹{b.advance_amount.toLocaleString('en-IN')})
                           </div>
                         </div>
@@ -393,7 +390,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
                           <button
                             type="button"
                             onClick={() => handleMarkPaid(b.id)}
-                            className="press-bounce px-3 py-1.5 rounded-full bg-[#D4AF37] text-[#0B0B0C] text-[11px] font-bold cursor-pointer"
+                            className="press-bounce px-3 py-1.5 rounded-full bg-[#D4AF37] text-[#121212] text-[11px] font-bold cursor-pointer"
                           >
                             Mark Paid &amp; Lock
                           </button>
@@ -406,7 +403,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
 
               {/* #31 Waitlist Auto-Refill */}
               <div className="rounded-3xl bg-white/5 border border-[#D4AF37]/30 p-5">
-                <h3 className="font-display text-lg font-bold text-[#EAD28B] mb-3">
+                <h3 className="font-display text-lg font-bold text-[#F5E08E] mb-3">
                   Waitlist &amp; Auto-Refill Queue
                 </h3>
                 <div className="space-y-2">
@@ -419,7 +416,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
                         type="button"
                         disabled={Boolean(w.notified)}
                         onClick={() => handleNotifyWaitlist(w.id)}
-                        className="px-3 py-1 rounded-full bg-[#9E1B2B] text-[#EAD28B] font-bold text-[11px] border border-[#D4AF37]/40 cursor-pointer disabled:opacity-60"
+                        className="px-3 py-1 rounded-full bg-[#B01E2E] text-[#F5E08E] font-bold text-[11px] border border-[#D4AF37]/40 cursor-pointer disabled:opacity-60"
                       >
                         {w.notified ? 'WhatsApp Sent' : 'Auto-Notify'}
                       </button>
@@ -430,7 +427,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
 
               {/* Unified Lead Inbox */}
               <div className="rounded-3xl bg-white/5 border border-[#D4AF37]/30 p-5">
-                <h3 className="font-display text-lg font-bold text-[#EAD28B] mb-3">
+                <h3 className="font-display text-lg font-bold text-[#F5E08E] mb-3">
                   Unified Lead Inbox (Instagram + WhatsApp + Web)
                 </h3>
                 <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
@@ -441,14 +438,14 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
                     >
                       <div>
                         <div className="font-bold text-white">
-                          {lead.name} <span className="text-[#EAD28B] font-normal">· {lead.city}</span>
+                          {lead.name} <span className="text-[#F5E08E] font-normal">· {lead.city}</span>
                         </div>
                         <div className="text-[11px] text-white/65">
                           {lead.makeup_type} · {lead.event_date} · {lead.notes}
                         </div>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="px-2 py-0.5 rounded-full bg-[#9E1B2B] text-[#EAD28B] text-[10px] font-bold">
+                        <span className="px-2 py-0.5 rounded-full bg-[#B01E2E] text-[#F5E08E] text-[10px] font-bold">
                           {lead.source}
                         </span>
                         <div className="text-[10px] text-emerald-300 mt-1">{lead.status}</div>
@@ -460,8 +457,8 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
             </div>
 
             {/* Right: Bride Detail & Payment Tracking */}
-            <div className="lg:col-span-5 rounded-3xl bg-gradient-to-b from-[#2A0510] to-[#0B0B0C] border border-[#D4AF37]/50 p-5">
-              <h3 className="font-display text-lg font-bold text-[#EAD28B] mb-3">
+            <div className="lg:col-span-5 rounded-3xl bg-gradient-to-b from-[#2A0510] to-[#121212] border border-[#D4AF37]/50 p-5">
+              <h3 className="font-display text-lg font-bold text-[#F5E08E] mb-3">
                 Bride Detail &amp; Payment History
               </h3>
 
@@ -473,7 +470,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
                     onClick={() => setSelectedBride(b)}
                     className={`px-3 py-1 rounded-full text-[11px] font-semibold border cursor-pointer ${
                       selectedBride?.id === b.id
-                        ? 'bg-[#D4AF37] text-[#0B0B0C] border-white'
+                        ? 'bg-[#D4AF37] text-[#121212] border-white'
                         : 'bg-white/5 text-white/80 border-white/15'
                     }`}
                   >
@@ -487,7 +484,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
                   <div className="rounded-2xl bg-black/35 p-4 border border-[#D4AF37]/30 space-y-2">
                     <div className="flex justify-between">
                       <span className="text-white/60">Bride Name</span>
-                      <span className="font-bold text-[#EAD28B]">{selectedBride.customer_name}</span>
+                      <span className="font-bold text-[#F5E08E]">{selectedBride.customer_name}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-white/60">Event Date &amp; City</span>
@@ -506,7 +503,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
                       <span>{selectedBride.artist_name || 'Riya Sen'}</span>
                     </div>
                     {selectedBride.upsells && (
-                      <div className="flex justify-between text-[#EAD28B]">
+                      <div className="flex justify-between text-[#F5E08E]">
                         <span>Upsells</span>
                         <span>{selectedBride.upsells}</span>
                       </div>
@@ -514,7 +511,7 @@ export default function AdminDashboard({ isOpen, onClose, refreshTrigger, adminT
                   </div>
 
                   <div className="rounded-2xl bg-black/35 p-4 border border-[#D4AF37]/30 space-y-2">
-                    <div className="text-[11px] uppercase tracking-wider text-[#EAD28B] font-bold">
+                    <div className="text-[11px] uppercase tracking-wider text-[#F5E08E] font-bold">
                       Payment History
                     </div>
                     <div className="flex justify-between items-center">

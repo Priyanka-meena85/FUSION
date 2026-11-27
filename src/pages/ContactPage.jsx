@@ -6,13 +6,13 @@ import { CssClock, CssPin, CssPhone, CssSparkle } from '../components/CssIcons';
 
 export default function ContactPage() {
   return (
-    <div className="bg-[#FAF6F0]">
+    <div className="bg-[#FFF8F0]">
       <section className="py-14 px-4">
         <div className="max-w-4xl mx-auto text-center space-y-4">
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#9E1B2B] bg-[#F3ECE1] px-3.5 py-1 rounded-full">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#B01E2E] bg-[#FADADD] px-3.5 py-1 rounded-full">
             <CssSparkle size={11} /> Visit Fusion Salon, Ajmer
           </span>
-          <h1 className="font-display text-3xl sm:text-5xl font-bold text-[#0B0B0C]">
+          <h1 className="font-display text-3xl sm:text-5xl font-bold text-[#121212]">
             Naka Madar, Near Jain Mandir
           </h1>
           <p className="text-sm text-stone-600 max-w-xl mx-auto">
@@ -21,17 +21,17 @@ export default function ContactPage() {
 
           <div className="grid sm:grid-cols-3 gap-4 pt-4 text-left">
             <div className="rounded-2xl bg-white p-5 border-2 border-[#D4AF37]/45">
-              <div className="text-[#9E1B2B] mb-2"><CssPin /></div>
+              <div className="text-[#B01E2E] mb-2"><CssPin /></div>
               <div className="font-display font-bold text-base">Address</div>
               <p className="text-xs text-stone-600 mt-1">Naka Madar, Ajmer, Near Jain Mandir, Rajasthan</p>
             </div>
             <div className="rounded-2xl bg-white p-5 border-2 border-[#D4AF37]/45">
-              <div className="text-[#9E1B2B] mb-2"><CssClock /></div>
+              <div className="text-[#B01E2E] mb-2"><CssClock /></div>
               <div className="font-display font-bold text-base">Salon Hours</div>
               <p className="text-xs text-stone-600 mt-1">10:00 AM – 8:30 PM · Open All 7 Days</p>
             </div>
             <div className="rounded-2xl bg-white p-5 border-2 border-[#D4AF37]/45">
-              <div className="text-[#9E1B2B] mb-2"><CssPhone /></div>
+              <div className="text-[#B01E2E] mb-2"><CssPhone /></div>
               <div className="font-display font-bold text-base">Direct Desk</div>
               <p className="text-xs text-stone-600 mt-1">+91 98290 00000 · @fusionsaloon16</p>
             </div>
@@ -40,7 +40,7 @@ export default function ContactPage() {
           <div className="pt-4">
             <Link
               to="/book"
-              className="btn-shimmer inline-block px-7 py-3 rounded-full bg-[#9E1B2B] border-2 border-[#D4AF37] text-white text-xs font-bold"
+              className="btn-shimmer inline-block px-7 py-3 rounded-full bg-[#B01E2E] border-2 border-[#D4AF37] text-white text-xs font-bold"
             >
               Book Your Appointment Now
             </Link>

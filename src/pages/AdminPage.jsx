@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AdminDashboard from '../components/AdminDashboard';
 import { CssLock } from '../components/CssIcons';
 
 export default function AdminPage({ refreshTrigger }) {
-  const [adminToken, setAdminToken] = useState(() => sessionStorage.getItem('fusion_admin_token') || '');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/admin/session', { credentials: 'include' })
+      .then((res) => setIsAuthenticated(res.ok))
+      .catch(() => setIsAuthenticated(false))
+      .finally(() => setCheckingSession(false));
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -16,14 +24,14 @@ export default function AdminPage({ refreshTrigger }) {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ pin }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || 'Invalid PIN');
       } else {
-        sessionStorage.setItem('fusion_admin_token', data.token);
-        setAdminToken(data.token);
+        setIsAuthenticated(true);
         setPin('');
       }
     } catch {
@@ -34,11 +42,19 @@ export default function AdminPage({ refreshTrigger }) {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem('fusion_admin_token');
-    setAdminToken('');
+    fetch('/api/admin/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
+    setIsAuthenticated(false);
   };
 
-  if (!adminToken) {
+  if (checkingSession) {
+    return (
+      <div className="min-h-[75vh] bg-[#0B0B0C] text-[#FAF6F0] flex items-center justify-center px-4 py-16">
+        <p className="text-xs uppercase tracking-widest text-[#D4AF37]">Verifying Owner Session...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return (
       <div className="min-h-[75vh] bg-[#0B0B0C] text-[#FAF6F0] flex items-center justify-center px-4 py-16">
         <form
@@ -65,7 +81,7 @@ export default function AdminPage({ refreshTrigger }) {
             required
             value={pin}
             onChange={(e) => setPin(e.target.value)}
-            placeholder="Enter PIN (Demo: 2026)"
+            placeholder="Enter Owner PIN"
             className="w-full text-center tracking-[0.4em] font-mono text-lg px-4 py-3 rounded-2xl bg-black/50 border border-[#D4AF37]/50 text-[#D4AF37] focus:outline-none focus:border-[#D4AF37]"
           />
 
@@ -87,7 +103,6 @@ export default function AdminPage({ refreshTrigger }) {
     <div className="min-h-[75vh] bg-[#0B0B0C]">
       <AdminDashboard
         refreshTrigger={refreshTrigger}
-        adminToken={adminToken}
         onUnauthorized={handleLogout}
         onLogout={handleLogout}
       />

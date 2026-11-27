@@ -32,13 +32,13 @@ export default function FaqSection() {
   const [openIdx, setOpenIdx] = useState(0);
 
   return (
-    <section id="faq" className="reveal-section py-14 sm:py-18 px-4 bg-[#FAF6F0]">
+    <section id="faq" className="reveal-section py-14 sm:py-18 px-4 bg-[#FFF8F0]">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#9E1B2B] bg-[#F3ECE1] px-3.5 py-1 rounded-full">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#B01E2E] bg-[#FADADD] px-3.5 py-1 rounded-full">
             <CssSparkle size={11} /> Brides &amp; Clients FAQ
           </span>
-          <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#0B0B0C] mt-3">
+          <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#121212] mt-3">
             Frequently Asked Questions
           </h2>
           <p className="text-sm text-stone-600 mt-1.5">
@@ -55,7 +55,7 @@ export default function FaqSection() {
                 className={`rounded-2xl border-2 transition ${
                   isOpen
                     ? 'bg-white border-[#D4AF37] shadow-[0_10px_28px_rgba(212,175,55,0.16)]'
-                    : 'bg-white/80 border-[#D4AF37]/35 hover:border-[#9E1B2B]/50'
+                    : 'bg-white/80 border-[#D4AF37]/35 hover:border-[#B01E2E]/50'
                 }`}
               >
                 <button
@@ -64,14 +64,14 @@ export default function FaqSection() {
                   onClick={() => setOpenIdx(isOpen ? -1 : idx)}
                   className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer"
                 >
-                  <span className="font-display text-sm sm:text-base font-bold text-[#0B0B0C]">
+                  <span className="font-display text-sm sm:text-base font-bold text-[#121212]">
                     {item.q}
                   </span>
                   <span
                     className={`w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-sm font-bold border transition ${
                       isOpen
-                        ? 'bg-[#9E1B2B] text-[#D4AF37] border-[#D4AF37]'
-                        : 'bg-[#F3ECE1] text-[#9E1B2B] border-[#D4AF37]/40'
+                        ? 'bg-[#B01E2E] text-[#D4AF37] border-[#D4AF37]'
+                        : 'bg-[#FADADD] text-[#B01E2E] border-[#D4AF37]/40'
                     }`}
                   >
                     {isOpen ? '−' : '+'}

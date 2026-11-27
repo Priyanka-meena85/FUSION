@@ -117,19 +117,19 @@ export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
   };
 
   return (
-    <section className="reveal-section py-14 sm:py-18 px-4 bg-[#FAF6F0]">
+    <section className="reveal-section py-14 sm:py-18 px-4 bg-[#FFF8F0]">
       <div className="max-w-5xl mx-auto grid md:grid-cols-12 gap-8 items-center">
         <div className="md:col-span-6 space-y-4">
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#9E1B2B] bg-[#F3ECE1] px-3.5 py-1 rounded-full">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#B01E2E] bg-[#FADADD] px-3.5 py-1 rounded-full">
             <CssSparkle size={11} /> 24x7 Auto Inquiry Bot
           </span>
-          <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#0B0B0C]">
+          <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#121212]">
             From First DM to Date Lock — Zero Missed Leads
           </h2>
-          <p className="text-sm text-[#0B0B0C]/75 leading-relaxed">
-            Whether a bride messages at 2 AM on Instagram or WhatsApp, Fusion&apos;s bot checks availability, shares <span className="font-semibold text-[#9E1B2B]">Bridal_Packages.pdf</span>, saves the lead to CRM, and triggers Human Handover when needed.
+          <p className="text-sm text-[#121212]/75 leading-relaxed">
+            Whether a bride messages at 2 AM on Instagram or WhatsApp, Fusion&apos;s bot checks availability, shares <span className="font-semibold text-[#B01E2E]">Bridal_Packages.pdf</span>, saves the lead to CRM, and triggers Human Handover when needed.
           </p>
-          <div className="space-y-2 text-xs text-[#0B0B0C]/80 pt-1">
+          <div className="space-y-2 text-xs text-[#121212]/80 pt-1">
             <div className="flex items-center gap-2">
               <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center"><CssCheck /></span>
               <span>Instant reply in under 1 second, 24x7</span>
@@ -146,10 +146,10 @@ export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
         </div>
 
         <div className="md:col-span-6 flex justify-center">
-          <div className="w-full max-w-[340px] rounded-[36px] bg-[#0B0B0C] p-3 shadow-[0_24px_60px_rgba(26,26,26,0.28)] border-2 border-[#D4AF37]/60">
-            <div className="rounded-t-[26px] bg-[#9E1B2B] text-[#FAF6F0] px-4 py-3 flex items-center justify-between">
+          <div className="w-full max-w-[340px] rounded-[36px] bg-[#121212] p-3 shadow-[0_24px_60px_rgba(26,26,26,0.28)] border-2 border-[#D4AF37]/60">
+            <div className="rounded-t-[26px] bg-[#B01E2E] text-[#FFF8F0] px-4 py-3 flex items-center justify-between">
               <div>
-                <div className="font-display text-sm font-bold text-[#EAD28B]">Fusion Bridal Bot</div>
+                <div className="font-display text-sm font-bold text-[#F5E08E]">Fusion Bridal Bot</div>
                 <div className="text-[10px] text-emerald-300">21. Multi-Lang: {lang}</div>
               </div>
               <div className="flex items-center gap-1">
@@ -159,7 +159,7 @@ export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
                     type="button"
                     onClick={() => switchLang(l)}
                     className={`text-[9px] px-1.5 py-0.5 rounded-full border cursor-pointer ${
-                      lang === l ? 'bg-[#D4AF37] text-[#0B0B0C] border-white font-bold' : 'border-[#D4AF37]/40 text-[#EAD28B]'
+                      lang === l ? 'bg-[#D4AF37] text-[#121212] border-white font-bold' : 'border-[#D4AF37]/40 text-[#F5E08E]'
                     }`}
                   >
                     {l}
@@ -168,21 +168,21 @@ export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
                 <button
                   type="button"
                   onClick={resetChat}
-                  className="text-[10px] px-2 py-0.5 rounded-full border border-[#D4AF37]/50 text-[#EAD28B] hover:bg-white/10 cursor-pointer"
+                  className="text-[10px] px-2 py-0.5 rounded-full border border-[#D4AF37]/50 text-[#F5E08E] hover:bg-white/10 cursor-pointer"
                 >
                   Reset
                 </button>
               </div>
             </div>
 
-            <div className="bg-[#FAF6F0] h-[300px] overflow-y-auto p-3.5 space-y-2.5">
+            <div className="bg-[#FFF8F0] h-[300px] overflow-y-auto p-3.5 space-y-2.5">
               {messages.map((m) => (
                 <div key={m.id} className={`flex flex-col ${m.sender === 'bride' ? 'items-end' : 'items-start'}`}>
                   <div
                     className={`max-w-[82%] px-3.5 py-2 rounded-2xl text-xs leading-relaxed shadow-sm ${
                       m.sender === 'bride'
-                        ? 'bg-[#F3ECE1] text-[#0B0B0C] border border-[#D4AF37]/40 rounded-br-sm font-medium'
-                        : 'bg-[#0B0B0C] text-[#D4AF37] border border-[#D4AF37]/55 rounded-bl-sm'
+                        ? 'bg-[#FADADD] text-[#121212] border border-[#D4AF37]/40 rounded-br-sm font-medium'
+                        : 'bg-[#121212] text-[#D4AF37] border border-[#D4AF37]/55 rounded-bl-sm'
                     }`}
                   >
                     {m.text}
@@ -191,7 +191,7 @@ export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
                     <button
                       type="button"
                       onClick={() => setPdfToast(true)}
-                      className="press-bounce mt-1.5 px-3 py-1.5 rounded-xl bg-[#9E1B2B] border border-[#D4AF37] text-[#FAF6F0] text-[11px] font-bold shadow-sm animate-bounce cursor-pointer"
+                      className="press-bounce mt-1.5 px-3 py-1.5 rounded-xl bg-[#B01E2E] border border-[#D4AF37] text-[#FFF8F0] text-[11px] font-bold shadow-sm animate-bounce cursor-pointer"
                     >
                       Bridal_Packages.pdf (Tap to Preview)
                     </button>
@@ -208,7 +208,7 @@ export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
               )}
 
               {pdfToast && (
-                <div className="rounded-xl bg-[#0B0B0C] text-[#EAD28B] p-2.5 text-[11px] flex items-center justify-between">
+                <div className="rounded-xl bg-[#121212] text-[#F5E08E] p-2.5 text-[11px] flex items-center justify-between">
                   <span>Bridal_Packages.pdf (HD ₹25k · Airbrush ₹35k)</span>
                   <button type="button" onClick={onJumpToBook} className="underline font-bold ml-2 cursor-pointer">
                     Book
@@ -227,7 +227,7 @@ export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
                     key={p.id}
                     type="button"
                     onClick={() => handlePresetClick(p)}
-                    className="press-bounce text-[11px] px-3 py-1.5 rounded-full bg-[#F3ECE1] text-[#9E1B2B] font-semibold border border-[#D4AF37]/45 hover:bg-[#9E1B2B] hover:text-white transition cursor-pointer"
+                    className="press-bounce text-[11px] px-3 py-1.5 rounded-full bg-[#FADADD] text-[#B01E2E] font-semibold border border-[#D4AF37]/45 hover:bg-[#B01E2E] hover:text-white transition cursor-pointer"
                   >
                     {p.reply}
                   </button>
@@ -236,7 +236,7 @@ export default function ChatbotDemo({ onJumpToBook, onLeadSaved }) {
                   <button
                     type="button"
                     onClick={handleHumanHandover}
-                    className="press-bounce text-[11px] px-3 py-1.5 rounded-full bg-[#0B0B0C] text-[#EAD28B] font-semibold cursor-pointer"
+                    className="press-bounce text-[11px] px-3 py-1.5 rounded-full bg-[#121212] text-[#F5E08E] font-semibold cursor-pointer"
                   >
                     Talk to Artist (Handover)
                   </button>

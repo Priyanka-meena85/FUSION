@@ -3,6 +3,7 @@ import { CssSparkle } from './CssIcons';
 
 export default function FestivalOffers() {
   const [campaigns, setCampaigns] = useState([]);
+  const [authNotice, setAuthNotice] = useState('');
 
   useEffect(() => {
     fetch('/api/campaigns')
@@ -15,41 +16,43 @@ export default function FestivalOffers() {
 
   const toggleCampaign = async (camp) => {
     const nextEnabled = camp.enabled ? 0 : 1;
-    setCampaigns((prev) =>
-      prev.map((c) =>
-        c.id === camp.id
-          ? {
-              ...c,
-              enabled: nextEnabled,
-              last_sent_at: nextEnabled ? `WhatsApp blast queued · ${c.target_count} clients` : null,
-            }
-          : c
-      )
-    );
+    setAuthNotice('');
     try {
-      await fetch(`/api/campaigns/${camp.id}`, {
+      const res = await fetch(`/api/campaigns/${camp.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ enabled: Boolean(nextEnabled) }),
       });
+      if (!res.ok) {
+        setAuthNotice('Owner Admin sign-in required to toggle WhatsApp festival campaigns.');
+        return;
+      }
+      const data = await res.json();
+      setCampaigns((prev) =>
+        prev.map((c) => (c.id === camp.id ? data.campaign : c))
+      );
     } catch {
-      // keep optimistic
+      setAuthNotice('Unable to reach server.');
     }
   };
 
   return (
-    <section className="reveal-section py-14 px-4 bg-[#F3ECE1]/55 border-y border-[#D4AF37]/25">
+    <section className="reveal-section py-14 px-4 bg-[#FADADD]/55 border-y border-[#D4AF37]/25">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#9E1B2B] bg-white px-3.5 py-1 rounded-full border border-[#D4AF37]/35">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#B01E2E] bg-white px-3.5 py-1 rounded-full border border-[#D4AF37]/35">
             <CssSparkle size={11} /> Auto Repeat Bookings
           </span>
-          <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#0B0B0C] mt-3">
+          <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#121212] mt-3">
             Festival Offers — Auto WhatsApp Campaign
           </h2>
-          <p className="text-sm text-[#0B0B0C]/70 mt-1.5">
+          <p className="text-sm text-[#121212]/70 mt-1.5">
             Toggle ON any festival campaign to auto-send party makeup offers to past brides &amp; Ajmer regulars.
           </p>
+          {authNotice && (
+            <p className="text-xs text-[#9E1B2B] font-semibold mt-2">{authNotice}</p>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
@@ -60,12 +63,12 @@ export default function FestivalOffers() {
                 key={c.id}
                 className={`relative rounded-3xl p-5 border transition-all duration-300 ${
                   on
-                    ? 'bg-gradient-to-br from-[#9E1B2B] to-[#4A081C] text-[#FAF6F0] border-[#D4AF37] shadow-[0_14px_35px_rgba(201,162,39,0.3)]'
-                    : 'bg-white text-[#0B0B0C] border-[#D4AF37]/30 opacity-90'
+                    ? 'bg-gradient-to-br from-[#B01E2E] to-[#4A081C] text-[#FFF8F0] border-[#D4AF37] shadow-[0_14px_35px_rgba(201,162,39,0.3)]'
+                    : 'bg-white text-[#121212] border-[#D4AF37]/30 opacity-90'
                 }`}
               >
                 {on && (
-                  <div className="absolute top-3 right-3 text-[#EAD28B] pointer-events-none">
+                  <div className="absolute top-3 right-3 text-[#F5E08E] pointer-events-none">
                     <CssSparkle size={16} />
                   </div>
                 )}
@@ -74,7 +77,7 @@ export default function FestivalOffers() {
                   {c.subtitle}
                 </div>
                 <h3 className="font-display text-xl font-bold mt-1">{c.title}</h3>
-                <p className={`text-xs mt-2 leading-relaxed ${on ? 'text-[#FAF6F0]/80' : 'text-stone-600'}`}>
+                <p className={`text-xs mt-2 leading-relaxed ${on ? 'text-[#FFF8F0]/80' : 'text-stone-600'}`}>
                   {c.offer_text}
                 </p>
 

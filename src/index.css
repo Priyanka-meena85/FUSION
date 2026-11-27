@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --bridal-red: #9E1B2B;
-  --bridal-red-dark: #75121E;
+  --bridal-red: #B01E2E;
+  --bridal-red-dark: #7D111E;
   --royal-gold: #D4AF37;
-  --gold-light: #EAD28B;
-  --cream: #FAF6F0;
-  --nail-pink: #F3ECE1;
-  --glossy-black: #0B0B0C;
+  --gold-light: #F5E08E;
+  --cream: #FFF8F0;
+  --nail-pink: #FADADD;
+  --glossy-black: #121212;
 }
 
 html {

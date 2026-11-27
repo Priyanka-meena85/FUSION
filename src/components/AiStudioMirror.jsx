@@ -2,14 +2,14 @@ import React, { useRef, useState } from 'react';
 import { CssCheck, CssSparkle } from './CssIcons';
 
 const LIP_SHADES = [
-  { name: 'Bridal Red', hex: '#9E1B2B' },
+  { name: 'Bridal Red', hex: '#B01E2E' },
   { name: 'Rose Pink', hex: '#D96B84' },
   { name: 'Royal Wine', hex: '#6E1428' },
   { name: 'Soft Nude', hex: '#C68B77' },
 ];
 
 const HAIR_COLOURS = [
-  { name: 'Natural Black', hex: '#0B0B0C' },
+  { name: 'Natural Black', hex: '#121212' },
   { name: 'Burgundy', hex: '#6D182B' },
   { name: 'Caramel Blonde', hex: '#B68642' },
   { name: 'Espresso', hex: '#3D2318' },
@@ -87,16 +87,16 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
   };
 
   return (
-    <section className="reveal-section py-14 px-4 bg-[#0B0B0C] text-[#FAF6F0] border-y border-[#D4AF37]/40">
+    <section className="reveal-section py-14 px-4 bg-[#121212] text-[#FFF8F0] border-y border-[#D4AF37]/40">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#D4AF37] bg-[#9E1B2B]/30 px-3.5 py-1 rounded-full border border-[#D4AF37]/45">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#D4AF37] bg-[#B01E2E]/30 px-3.5 py-1 rounded-full border border-[#D4AF37]/45">
             <CssSparkle size={11} /> Virtual Mirror Studio
           </span>
           <h2 className="font-display text-2xl sm:text-4xl font-bold mt-3">
             Shade Try-On, Skin Guide &amp; Budget Planner
           </h2>
-          <p className="text-sm text-[#FAF6F0]/70 mt-1.5">
+          <p className="text-sm text-[#FFF8F0]/70 mt-1.5">
             Preview lipstick &amp; hair shades, get your pre-bridal skin guide, or plan by budget.
           </p>
         </div>
@@ -115,7 +115,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
               onClick={() => setActiveTab(t.id)}
               className={`press-bounce px-4 py-2 rounded-full text-xs font-bold border cursor-pointer ${
                 activeTab === t.id
-                  ? 'bg-[#9E1B2B] text-[#FAF6F0] border-[#D4AF37] shadow-[0_0_16px_rgba(212,175,55,0.35)]'
+                  ? 'bg-[#B01E2E] text-[#FFF8F0] border-[#D4AF37] shadow-[0_0_16px_rgba(212,175,55,0.35)]'
                   : 'bg-white/5 text-[#D4AF37] border-[#D4AF37]/35'
               }`}
             >
@@ -142,10 +142,10 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
                       {/* Face */}
                       <div className="w-22 h-26 rounded-[45%] bg-gradient-to-b from-[#F7D8C2] to-[#E6B89A] flex flex-col items-center justify-center relative">
                         <div className="flex gap-5">
-                          <div className="w-3.5 h-1 border-b-2 border-[#0B0B0C] rounded-full" />
-                          <div className="w-3.5 h-1 border-b-2 border-[#0B0B0C] rounded-full" />
+                          <div className="w-3.5 h-1 border-b-2 border-[#121212] rounded-full" />
+                          <div className="w-3.5 h-1 border-b-2 border-[#121212] rounded-full" />
                         </div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#9E1B2B] mt-1" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#B01E2E] mt-1" />
                         <div
                           className="w-6 h-2 rounded-full mt-5 transition-colors duration-300"
                           style={{ backgroundColor: lipShade.hex }}
@@ -153,7 +153,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
                       </div>
                     </div>
                   )}
-                  <div className="absolute bottom-2 inset-x-2 text-center bg-[#0B0B0C]/80 rounded-lg py-1 text-[10px] text-[#D4AF37]">
+                  <div className="absolute bottom-2 inset-x-2 text-center bg-[#121212]/80 rounded-lg py-1 text-[10px] text-[#D4AF37]">
                     Lip: {lipShade.name} · Hair: {hairColour.name}
                   </div>
                 </div>
@@ -179,7 +179,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
                         type="button"
                         onClick={() => setLipShade(s)}
                         className={`press-bounce p-2.5 rounded-xl border text-xs font-semibold flex items-center gap-2 cursor-pointer ${
-                          lipShade.name === s.name ? 'border-[#D4AF37] bg-[#9E1B2B]/30' : 'border-white/15 bg-black/30'
+                          lipShade.name === s.name ? 'border-[#D4AF37] bg-[#B01E2E]/30' : 'border-white/15 bg-black/30'
                         }`}
                       >
                         <span className="w-4 h-4 rounded-full border border-white" style={{ backgroundColor: s.hex }} />
@@ -200,7 +200,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
                         type="button"
                         onClick={() => setHairColour(h)}
                         className={`press-bounce p-2.5 rounded-xl border text-xs font-semibold flex items-center gap-2 cursor-pointer ${
-                          hairColour.name === h.name ? 'border-[#D4AF37] bg-[#9E1B2B]/30' : 'border-white/15 bg-black/30'
+                          hairColour.name === h.name ? 'border-[#D4AF37] bg-[#B01E2E]/30' : 'border-white/15 bg-black/30'
                         }`}
                       >
                         <span className="w-4 h-4 rounded-full border border-white" style={{ backgroundColor: h.hex }} />
@@ -224,14 +224,14 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
                       type="button"
                       onClick={() => setSkinType(sk)}
                       className={`px-4 py-2 rounded-xl text-xs font-bold border cursor-pointer ${
-                        skinType === sk ? 'bg-[#9E1B2B] border-[#D4AF37]' : 'bg-black/40 border-white/15'
+                        skinType === sk ? 'bg-[#B01E2E] border-[#D4AF37]' : 'bg-black/40 border-white/15'
                       }`}
                     >
                       {sk} Skin
                     </button>
                   ))}
                 </div>
-                <div className="rounded-2xl bg-[#F3ECE1]/15 border border-[#D4AF37]/40 p-4 text-xs text-[#FAF6F0]/90 leading-relaxed">
+                <div className="rounded-2xl bg-[#FADADD]/15 border border-[#D4AF37]/40 p-4 text-xs text-[#FFF8F0]/90 leading-relaxed">
                   <strong>AI Prescription ({skinType}):</strong> {SKIN_PLANS[skinType]}
                 </div>
               </div>
@@ -245,14 +245,14 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
                       type="button"
                       onClick={() => setFaceShape(fs)}
                       className={`px-4 py-2 rounded-xl text-xs font-bold border cursor-pointer ${
-                        faceShape === fs ? 'bg-[#9E1B2B] border-[#D4AF37]' : 'bg-black/40 border-white/15'
+                        faceShape === fs ? 'bg-[#B01E2E] border-[#D4AF37]' : 'bg-black/40 border-white/15'
                       }`}
                     >
                       {fs}
                     </button>
                   ))}
                 </div>
-                <div className="rounded-2xl bg-[#F3ECE1]/15 border border-[#D4AF37]/40 p-4 text-xs text-[#FAF6F0]/90 leading-relaxed">
+                <div className="rounded-2xl bg-[#FADADD]/15 border border-[#D4AF37]/40 p-4 text-xs text-[#FFF8F0]/90 leading-relaxed">
                   <strong>AI Look Match ({faceShape} Face):</strong> {FACE_TIPS[faceShape]}
                 </div>
               </div>
@@ -279,7 +279,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
                   className="w-full accent-[#D4AF37]"
                 />
                 <div className="rounded-2xl bg-black/40 border border-[#D4AF37]/45 p-4 text-xs space-y-1">
-                  <div className="font-bold text-[#F3ECE1]">{budgetRec.pkg}</div>
+                  <div className="font-bold text-[#FADADD]">{budgetRec.pkg}</div>
                   <div className="text-white/75">{budgetRec.note}</div>
                 </div>
               </div>
@@ -295,7 +295,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
                       type="button"
                       onClick={() => setLehengaTone(l)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold border cursor-pointer ${
-                        lehengaTone === l ? 'bg-[#9E1B2B] border-[#D4AF37]' : 'bg-black/40 border-white/15'
+                        lehengaTone === l ? 'bg-[#B01E2E] border-[#D4AF37]' : 'bg-black/40 border-white/15'
                       }`}
                     >
                       {l}
@@ -305,7 +305,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
                 <div className="rounded-2xl bg-black/40 border border-[#D4AF37]/45 p-4 text-xs">
                   <strong>Best Match for {lehengaTone}:</strong>{' '}
                   {lehengaTone === 'Red'
-                    ? '24K Gold Foil Lid + Bold Bridal Red Lip (#9E1B2B)'
+                    ? '24K Gold Foil Lid + Bold Bridal Red Lip (#B01E2E)'
                     : lehengaTone === 'Pastel Pink'
                     ? 'Champagne Shimmer + Soft Rose-Pink Lip + Dewy Highlighter'
                     : 'Bronze Smokey Eye + Deep Berry/Nude Lip'}
@@ -314,7 +314,7 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
                   <button
                     type="button"
                     onClick={() => onApplyRecommendation({ packageName: budget >= 35000 ? 'Airbrush Bridal' : 'HD Bridal', price: budget })}
-                    className="btn-shimmer px-5 py-2 rounded-full bg-[#9E1B2B] border border-[#D4AF37] text-xs font-bold cursor-pointer"
+                    className="btn-shimmer px-5 py-2 rounded-full bg-[#B01E2E] border border-[#D4AF37] text-xs font-bold cursor-pointer"
                   >
                     Lock Recommended Package
                   </button>
@@ -334,13 +334,13 @@ export default function AiStudioMirror({ onApplyRecommendation }) {
               <button
                 type="button"
                 onClick={handleVoiceDemo}
-                className="btn-shimmer px-7 py-3 rounded-full bg-[#9E1B2B] border-2 border-[#D4AF37] text-sm font-bold cursor-pointer"
+                className="btn-shimmer px-7 py-3 rounded-full bg-[#B01E2E] border-2 border-[#D4AF37] text-sm font-bold cursor-pointer"
               >
                 Start Voice Booking
               </button>
               {voiceText && (
                 <div className="rounded-2xl bg-black/45 border border-[#D4AF37]/40 p-4 text-xs space-y-1">
-                  <div className="text-[#F3ECE1]">&ldquo;{voiceText}&rdquo;</div>
+                  <div className="text-[#FADADD]">&ldquo;{voiceText}&rdquo;</div>
                   <div className="text-emerald-300 font-bold inline-flex items-center gap-1.5">
                     <CssCheck /> {voiceResult}
                   </div>

@@ -62,29 +62,29 @@ export default function HomePage({
 
       {/* Live 48-Hr Date Lock Banner */}
       <section className="px-4 -mt-6 relative z-20">
-        <div className="max-w-5xl mx-auto rounded-2xl bg-[#0B0B0C] text-[#FAF6F0] border-2 border-[#D4AF37] p-4 sm:p-5 shadow-[0_16px_40px_rgba(18,18,18,0.4)] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-5xl mx-auto rounded-2xl bg-[#121212] text-[#FFF8F0] border-2 border-[#D4AF37] p-4 sm:p-5 shadow-[0_16px_40px_rgba(18,18,18,0.4)] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#9E1B2B] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37] shrink-0">
+            <div className="w-10 h-10 rounded-full bg-[#B01E2E] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37] shrink-0">
               <CssClock />
             </div>
             <div>
               <div className="text-[10px] uppercase tracking-[0.2em] text-[#D4AF37] font-bold inline-flex items-center gap-1.5">
                 <CssSparkle size={10} /> 48-Hr Date Lock Rule · Feb 2026 Open
               </div>
-              <p className="text-xs text-[#FAF6F0]/80">
+              <p className="text-xs text-[#FFF8F0]/80">
                 12 Feb Locked · 14 Feb on 48-Hr Hold. Lock your wedding date in 3 clicks before timer expires.
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4 shrink-0">
-            <div className="font-mono text-xl sm:text-2xl font-bold text-[#EAD28B]">
+            <div className="font-mono text-xl sm:text-2xl font-bold text-[#F5E08E]">
               {formatTimer(expiresAt - now)}
             </div>
             <button
               type="button"
               onClick={() => scrollTo('book')}
-              className="btn-shimmer px-5 py-2.5 rounded-full bg-[#9E1B2B] border border-[#D4AF37] text-xs font-bold text-white cursor-pointer"
+              className="btn-shimmer px-5 py-2.5 rounded-full bg-[#B01E2E] border border-[#D4AF37] text-xs font-bold text-white cursor-pointer"
             >
               Lock Date Now
             </button>
@@ -143,10 +143,10 @@ export default function HomePage({
       <FaqSection />
 
       {/* Quick Link to Protected Owner Admin */}
-      <section className="py-8 px-4 bg-[#0B0B0C] text-center border-t border-[#D4AF37]/30">
+      <section className="py-8 px-4 bg-[#121212] text-center border-t border-[#D4AF37]/30">
         <Link
           to="/admin"
-          className="press-bounce inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#D4AF37] text-[#D4AF37] text-xs font-bold hover:bg-[#D4AF37] hover:text-[#0B0B0C] transition"
+          className="press-bounce inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#D4AF37] text-[#D4AF37] text-xs font-bold hover:bg-[#D4AF37] hover:text-[#121212] transition"
         >
           Open Protected Owner Admin Dashboard (PIN: 2026) &rarr;
         </Link>

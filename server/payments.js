@@ -1,22 +1,28 @@
 const crypto = require('node:crypto');
+const { timingSafeMatch } = require('./middleware/auth');
 
 /**
  * Production Integration Adapters (Razorpay + WhatsApp Business API)
- * Automatically uses live APIs when environment variables are configured,
- * and falls back cleanly to local simulation mode during development.
+ * Fails closed in production if Razorpay secrets are missing.
  */
 
 async function createPaymentOrder({ amountInInr, receiptCode, customerName }) {
   const keyId = process.env.RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const isProd = process.env.NODE_ENV === 'production';
 
   if (!keyId || !keySecret) {
+    if (isProd) {
+      throw new Error('Razorpay credentials are not configured in production.');
+    }
     return {
       provider: 'local-simulation',
       orderId: `sim_order_${receiptCode}`,
-      amount: amountInInr * 100,
+      paymentId: `sim_pay_${receiptCode}`,
+      signature: `sim_sig_${receiptCode}`,
+      amount: Number(amountInInr) * 100,
       currency: 'INR',
-      status: 'paid',
+      status: 'created',
     };
   }
 
@@ -34,20 +40,30 @@ async function createPaymentOrder({ amountInInr, receiptCode, customerName }) {
       notes: { customerName },
     }),
   });
+  if (!res.ok) {
+    throw new Error(`Razorpay order creation failed with status ${res.status}`);
+  }
   const data = await res.json();
-  return { provider: 'razorpay', ...data };
+  return { provider: 'razorpay', orderId: data.id, ...data };
 }
 
 function verifyRazorpaySignature({ orderId, paymentId, signature }) {
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const isProd = process.env.NODE_ENV === 'production';
+
   if (!keySecret) {
-    return true; // Local simulation mode
+    if (isProd) {
+      return false; // Fail closed in production
+    }
+    return typeof signature === 'string' && signature.startsWith('sim_sig_');
   }
+
+  if (!orderId || !paymentId || !signature) return false;
   const expected = crypto
     .createHmac('sha256', keySecret)
     .update(`${orderId}|${paymentId}`)
     .digest('hex');
-  return expected === signature;
+  return timingSafeMatch(expected, signature);
 }
 
 async function sendWhatsAppTemplate({ phone, templateName, params = [] }) {
