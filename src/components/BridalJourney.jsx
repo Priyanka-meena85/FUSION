@@ -81,33 +81,33 @@ export default function BridalJourney({ onJourneyUpdate }) {
   };
 
   return (
-    <section id="journey" className="reveal-section py-14 sm:py-18 px-4 bg-gradient-to-b from-[#4A081C] to-[#2A0510] text-[#FFF8F0]">
+    <section id="journey" className="reveal-section py-14 sm:py-18 px-4 bg-gradient-to-b from-[#0B0B0C] to-[#171214] text-[#FAF6F0]">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#F5E08E] bg-white/10 px-3.5 py-1 rounded-full border border-[#D4AF37]/40">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#EAD28B] bg-white/10 px-3.5 py-1 rounded-full border border-[#D4AF37]/40">
             <CssSparkle size={11} /> Bride Personal Dashboard &amp; Prep
           </span>
           <h2 className="font-display text-2xl sm:text-4xl font-bold mt-3">
             My Bridal Journey &amp; Personal Portal
           </h2>
-          <p className="text-sm text-[#FFF8F0]/75 mt-1.5">
+          <p className="text-sm text-[#FAF6F0]/75 mt-1.5">
             Track your D-30 to D+1 reminders, submit your Outfit &amp; Jewellery form, or reschedule 1-time without calling.
           </p>
         </div>
 
         {/* #18 Bride Personal Dashboard + #12 Reschedule */}
         {latestBooking && (
-          <div className="mb-8 rounded-3xl bg-[#121212]/70 border border-[#D4AF37]/50 p-5 grid md:grid-cols-12 gap-5 items-center">
+          <div className="mb-8 rounded-3xl bg-[#0B0B0C]/70 border border-[#D4AF37]/50 p-5 grid md:grid-cols-12 gap-5 items-center">
             <div className="md:col-span-7 space-y-1.5">
-              <div className="text-[11px] uppercase tracking-widest text-[#F5E08E] font-bold">
+              <div className="text-[11px] uppercase tracking-widest text-[#EAD28B] font-bold">
                 Active Booking · Receipt {latestBooking.receipt_code}
               </div>
               <h3 className="font-display text-xl font-bold">
                 {latestBooking.customer_name} — {latestBooking.event_date} ({latestBooking.package_name})
               </h3>
-              <p className="text-xs text-[#FFF8F0]/80 flex flex-wrap items-center gap-3">
+              <p className="text-xs text-[#FAF6F0]/80 flex flex-wrap items-center gap-3">
                 <span>Artist: <strong>{latestBooking.artist_name}</strong></span>
-                <span className="inline-flex items-center gap-1 text-[#F5E08E]">
+                <span className="inline-flex items-center gap-1 text-[#EAD28B]">
                   <CssPhone /> +91 98290 44100
                 </span>
                 <span>Advance Paid: ₹{Number(latestBooking.advance_amount).toLocaleString('en-IN')}</span>
@@ -115,7 +115,7 @@ export default function BridalJourney({ onJourneyUpdate }) {
             </div>
 
             <div className="md:col-span-5 bg-white/5 rounded-2xl p-3.5 border border-white/10 space-y-2">
-              <label className="block text-[10px] uppercase tracking-wider text-[#F5E08E] font-bold">
+              <label className="block text-[10px] uppercase tracking-wider text-[#EAD28B] font-bold">
                 1-Time Free Reschedule (No Call Needed)
               </label>
               <div className="flex gap-2">
@@ -130,7 +130,7 @@ export default function BridalJourney({ onJourneyUpdate }) {
                 <button
                   type="button"
                   onClick={handleReschedule}
-                  className="press-bounce px-3.5 py-1.5 rounded-xl bg-[#D4AF37] text-[#121212] text-xs font-bold cursor-pointer"
+                  className="press-bounce px-3.5 py-1.5 rounded-xl bg-[#D4AF37] text-[#0B0B0C] text-xs font-bold cursor-pointer"
                 >
                   Change Date
                 </button>
@@ -141,21 +141,21 @@ export default function BridalJourney({ onJourneyUpdate }) {
         )}
 
         {/* Gamified Progress Bar */}
-        <div className="bg-[#121212]/60 border border-[#D4AF37]/45 rounded-2xl p-4 mb-6">
+        <div className="bg-[#0B0B0C]/60 border border-[#D4AF37]/45 rounded-2xl p-4 mb-6">
           <div className="flex items-center justify-between text-xs font-bold mb-2">
-            <span className="text-[#F5E08E] uppercase tracking-wider">Bridal Readiness</span>
+            <span className="text-[#EAD28B] uppercase tracking-wider">Bridal Readiness</span>
             <span>{percent}% Complete</span>
           </div>
           <div className="w-full h-3 rounded-full bg-white/10 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[#D4AF37] via-[#F5E08E] to-[#D4AF37] transition-all duration-700"
+              className="h-full rounded-full bg-gradient-to-r from-[#D4AF37] via-[#EAD28B] to-[#D4AF37] transition-all duration-700"
               style={{ width: `${percent}%` }}
             />
           </div>
         </div>
 
         {celebrateDDay && (
-          <div className="mb-6 rounded-2xl bg-[#D4AF37] text-[#121212] p-4 text-center font-display font-bold text-lg shadow-xl flex items-center justify-center gap-3">
+          <div className="mb-6 rounded-2xl bg-[#D4AF37] text-[#0B0B0C] p-4 text-center font-display font-bold text-lg shadow-xl flex items-center justify-center gap-3">
             <CssSparkle size={18} />
             <span>Bride Ready! Wishing You a Magical Wedding Day!</span>
             <CssSparkle size={18} />
@@ -164,7 +164,7 @@ export default function BridalJourney({ onJourneyUpdate }) {
 
         <div className="grid lg:grid-cols-12 gap-6">
           {/* Timeline Steps with Soft Nail Pink Line & Gold Star on Complete */}
-          <div className="lg:col-span-7 relative pl-5 space-y-3 before:content-[''] before:absolute before:left-1.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-[#FADADD]/60">
+          <div className="lg:col-span-7 relative pl-5 space-y-3 before:content-[''] before:absolute before:left-1.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-[#F3ECE1]/60">
             {steps.map((step) => {
               const done = Boolean(step.completed);
               return (
@@ -173,40 +173,40 @@ export default function BridalJourney({ onJourneyUpdate }) {
                   onClick={() => toggleStep(step)}
                   className={`press-bounce relative cursor-pointer rounded-2xl p-4 border transition flex items-start justify-between gap-4 ${
                     done
-                      ? 'bg-[#FADADD]/15 border-[#D4AF37] shadow-[0_0_24px_rgba(212,175,55,0.25)]'
-                      : 'bg-[#121212]/65 border-white/15 hover:border-[#D4AF37]/60'
+                      ? 'bg-[#F3ECE1]/15 border-[#D4AF37] shadow-[0_0_24px_rgba(212,175,55,0.25)]'
+                      : 'bg-[#0B0B0C]/65 border-white/15 hover:border-[#D4AF37]/60'
                   }`}
                 >
                   <span
                     className={`absolute -left-[19px] top-6 w-2.5 h-2.5 rounded-full border ${
-                      done ? 'bg-[#D4AF37] border-[#FFF8F0]' : 'bg-[#FADADD] border-[#B01E2E]'
+                      done ? 'bg-[#D4AF37] border-[#FAF6F0]' : 'bg-[#F3ECE1] border-[#9E1B2B]'
                     }`}
                   />
                   <div className="flex items-start gap-3">
                     <div
                       className={`mt-0.5 w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition ${
-                        done ? 'bg-[#D4AF37] border-[#F5E08E] text-[#121212]' : 'border-[#D4AF37]/60'
+                        done ? 'bg-[#D4AF37] border-[#EAD28B] text-[#0B0B0C]' : 'border-[#D4AF37]/60'
                       }`}
                     >
                       {done && <CssCheck />}
                     </div>
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#B01E2E] text-[#F5E08E] border border-[#D4AF37]/45">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#9E1B2B] text-[#EAD28B] border border-[#D4AF37]/45">
                           {step.day_label}
                         </span>
-                        <h3 className={`font-display text-base font-bold ${done ? 'text-[#F5E08E]' : 'text-white'}`}>
+                        <h3 className={`font-display text-base font-bold ${done ? 'text-[#EAD28B]' : 'text-white'}`}>
                           {step.title}
                         </h3>
                       </div>
-                      <p className="text-xs text-[#FFF8F0]/80 mt-0.5">{step.subtitle}</p>
-                      <p className="text-[11px] text-[#FFF8F0]/65 mt-1">{step.detail}</p>
+                      <p className="text-xs text-[#FAF6F0]/80 mt-0.5">{step.subtitle}</p>
+                      <p className="text-[11px] text-[#FAF6F0]/65 mt-1">{step.detail}</p>
                     </div>
                   </div>
                   <CssStar
                     size={15}
                     filled={done}
-                    className={done ? 'text-[#F5E08E] shrink-0' : 'text-white shrink-0'}
+                    className={done ? 'text-[#EAD28B] shrink-0' : 'text-white shrink-0'}
                   />
                 </div>
               );
@@ -217,9 +217,9 @@ export default function BridalJourney({ onJourneyUpdate }) {
           <div className="lg:col-span-5 space-y-5">
             <form
               onSubmit={handleSavePrep}
-              className="rounded-3xl bg-[#121212]/65 border border-[#D4AF37]/45 p-5 space-y-3"
+              className="rounded-3xl bg-[#0B0B0C]/65 border border-[#D4AF37]/45 p-5 space-y-3"
             >
-              <div className="text-[11px] uppercase tracking-widest text-[#F5E08E] font-bold">
+              <div className="text-[11px] uppercase tracking-widest text-[#EAD28B] font-bold">
                 Outfit + Jewellery Prep Form
               </div>
               <p className="text-[11px] text-white/70">
@@ -257,7 +257,7 @@ export default function BridalJourney({ onJourneyUpdate }) {
               </div>
               <button
                 type="submit"
-                className="btn-shimmer w-full py-2.5 rounded-full bg-[#D4AF37] text-[#121212] font-bold text-xs cursor-pointer"
+                className="btn-shimmer w-full py-2.5 rounded-full bg-[#D4AF37] text-[#0B0B0C] font-bold text-xs cursor-pointer"
               >
                 {prepSaved ? 'Saved for Your Artist!' : 'Save Outfit & Jewellery Details'}
               </button>
@@ -265,7 +265,7 @@ export default function BridalJourney({ onJourneyUpdate }) {
 
             {/* #17 D-Day Checklist + #19 D+1 Thank You */}
             <div className="rounded-3xl bg-white/5 border border-[#D4AF37]/35 p-5 space-y-3 text-xs">
-              <div className="font-display text-base font-bold text-[#F5E08E]">
+              <div className="font-display text-base font-bold text-[#EAD28B]">
                 D-Day Bag Checklist (Reporting 5:30 AM)
               </div>
               <ul className="space-y-1.5 text-white/80">
@@ -273,7 +273,7 @@ export default function BridalJourney({ onJourneyUpdate }) {
                 <li>• Double-sided fashion tape, safety pins &amp; lens solution</li>
                 <li>• Freshly steamed double dupatta &amp; blouse</li>
               </ul>
-              <div className="pt-3 border-t border-white/10 text-[11px] text-[#F5E08E]">
+              <div className="pt-3 border-t border-white/10 text-[11px] text-[#EAD28B]">
                 <strong>D+1 Auto Thank You:</strong> &ldquo;Thank you Priya! Share your glow on Google &amp; unlock FUSION500.&rdquo;
               </div>
             </div>

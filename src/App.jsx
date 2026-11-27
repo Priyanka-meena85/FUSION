@@ -45,16 +45,16 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <div className="min-h-screen flex flex-col bg-[#FFF8F0] text-[#121212] relative">
+      <div className="min-h-screen flex flex-col bg-[#FAF6F0] text-[#0B0B0C] relative">
         {curtainVisible && (
           <div className="fixed inset-0 z-50 pointer-events-none flex overflow-hidden">
-            <div className="curtain-left w-1/2 h-full bg-gradient-to-r from-[#121212] via-[#3B0A10] to-[#B01E2E] border-r-2 border-[#D4AF37] flex items-center justify-end pr-4">
+            <div className="curtain-left w-1/2 h-full bg-gradient-to-r from-[#0B0B0C] via-[#3B0A10] to-[#9E1B2B] border-r-2 border-[#D4AF37] flex items-center justify-end pr-4">
               <span className="font-display text-xl sm:text-3xl font-bold text-[#D4AF37] tracking-widest">
                 FUSION
               </span>
             </div>
-            <div className="curtain-right w-1/2 h-full bg-gradient-to-l from-[#121212] via-[#3B0A10] to-[#B01E2E] border-l-2 border-[#D4AF37] flex items-center justify-start pl-4">
-              <span className="font-display text-sm sm:text-xl text-[#FFF8F0]/90 tracking-[0.25em] uppercase inline-flex items-center gap-2">
+            <div className="curtain-right w-1/2 h-full bg-gradient-to-l from-[#0B0B0C] via-[#3B0A10] to-[#9E1B2B] border-l-2 border-[#D4AF37] flex items-center justify-start pl-4">
+              <span className="font-display text-sm sm:text-xl text-[#FAF6F0]/90 tracking-[0.25em] uppercase inline-flex items-center gap-2">
                 <CssCrown className="text-[#D4AF37]" /> MIRROR
               </span>
             </div>

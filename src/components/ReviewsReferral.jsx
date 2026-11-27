@@ -56,14 +56,14 @@ export default function ReviewsReferral() {
   const marqueeItems = [...reviews, ...reviews];
 
   return (
-    <section className="reveal-section py-14 sm:py-18 px-4 bg-[#FFF8F0] overflow-hidden">
+    <section className="reveal-section py-14 sm:py-18 px-4 bg-[#FAF6F0] overflow-hidden">
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#B01E2E] bg-[#FADADD] px-3.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#9E1B2B] bg-[#F3ECE1] px-3.5 py-1 rounded-full">
               <CssStar size={11} /> 4.4 Google &amp; JustDial Wall
             </span>
-            <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#121212] mt-3">
+            <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#0B0B0C] mt-3">
               Loved by 500+ Ajmer &amp; Jaipur Brides
             </h2>
           </div>
@@ -94,7 +94,7 @@ export default function ReviewsReferral() {
             <button
               type="button"
               onClick={() => setShowModal(true)}
-              className="text-xs font-bold text-[#B01E2E] underline cursor-pointer"
+              className="text-xs font-bold text-[#9E1B2B] underline cursor-pointer"
             >
               Write Review
             </button>
@@ -114,11 +114,11 @@ export default function ReviewsReferral() {
                     <CssStar key={idx} size={12} />
                   ))}
                 </div>
-                <p className="text-xs text-[#121212]/80 leading-relaxed line-clamp-3">
+                <p className="text-xs text-[#0B0B0C]/80 leading-relaxed line-clamp-3">
                   &ldquo;{rev.comment}&rdquo;
                 </p>
                 <div className="mt-3 pt-3 border-t border-stone-100 flex items-center justify-between text-[11px]">
-                  <span className="font-bold text-[#B01E2E]">{rev.bride_name}</span>
+                  <span className="font-bold text-[#9E1B2B]">{rev.bride_name}</span>
                   <span className="text-stone-500">{rev.city} · {rev.look_type}</span>
                 </div>
               </div>
@@ -127,30 +127,30 @@ export default function ReviewsReferral() {
         </div>
 
         {/* Referral Card */}
-        <div className="mt-9 rounded-3xl bg-gradient-to-r from-[#B01E2E] via-[#8D173A] to-[#B01E2E] text-[#FFF8F0] p-6 sm:p-8 border border-[#D4AF37] shadow-xl flex flex-col md:flex-row items-center justify-between gap-5">
+        <div className="mt-9 rounded-3xl bg-gradient-to-r from-[#9E1B2B] via-[#8D173A] to-[#9E1B2B] text-[#FAF6F0] p-6 sm:p-8 border border-[#D4AF37] shadow-xl flex flex-col md:flex-row items-center justify-between gap-5">
           <div className="space-y-1.5 text-center md:text-left">
-            <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-[#F5E08E] font-bold">
+            <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-[#EAD28B] font-bold">
               <CssSparkle size={11} /> Referral Wallet
             </span>
             <h3 className="font-display text-2xl sm:text-3xl font-bold">
               Refer a Friend — Both Get ₹500 Off
             </h3>
-            <p className="text-xs text-[#FFF8F0]/80">
+            <p className="text-xs text-[#FAF6F0]/80">
               Share your personal referral code with a bride-to-be. Both get instant ₹500 credit at Fusion Ajmer.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 bg-[#121212]/60 border border-[#D4AF37] rounded-2xl px-4 py-3">
+          <div className="flex items-center gap-3 bg-[#0B0B0C]/60 border border-[#D4AF37] rounded-2xl px-4 py-3">
             <div>
-              <span className="text-[10px] uppercase text-[#FFF8F0]/60 block">Referral Code</span>
-              <span className="font-mono text-lg font-bold tracking-widest text-[#F5E08E]">
+              <span className="text-[10px] uppercase text-[#FAF6F0]/60 block">Referral Code</span>
+              <span className="font-mono text-lg font-bold tracking-widest text-[#EAD28B]">
                 FUSION500
               </span>
             </div>
             <button
               type="button"
               onClick={handleCopyCode}
-              className="press-bounce inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#D4AF37] text-[#121212] text-xs font-bold cursor-pointer"
+              className="press-bounce inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#D4AF37] text-[#0B0B0C] text-xs font-bold cursor-pointer"
             >
               {copied ? <CssCheck /> : <CssCopy />}
               <span>{copied ? 'Copied!' : 'Copy'}</span>
@@ -164,10 +164,10 @@ export default function ReviewsReferral() {
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <form
             onSubmit={handleSubmitReview}
-            className="bg-[#FFF8F0] border-2 border-[#D4AF37] rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl"
+            className="bg-[#FAF6F0] border-2 border-[#D4AF37] rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl"
           >
             <div className="flex items-center justify-between">
-              <h4 className="font-display text-xl font-bold text-[#B01E2E]">Share Your Fusion Glow</h4>
+              <h4 className="font-display text-xl font-bold text-[#9E1B2B]">Share Your Fusion Glow</h4>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
@@ -213,7 +213,7 @@ export default function ReviewsReferral() {
             />
             <button
               type="submit"
-              className="btn-shimmer w-full py-3 rounded-full bg-[#B01E2E] text-[#FFF8F0] font-bold text-xs cursor-pointer"
+              className="btn-shimmer w-full py-3 rounded-full bg-[#9E1B2B] text-[#FAF6F0] font-bold text-xs cursor-pointer"
             >
               Publish Review
             </button>

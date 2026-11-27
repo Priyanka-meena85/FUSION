@@ -40,12 +40,12 @@ export default function AdminPage({ refreshTrigger }) {
 
   if (!adminToken) {
     return (
-      <div className="min-h-[75vh] bg-[#121212] text-[#FFF8F0] flex items-center justify-center px-4 py-16">
+      <div className="min-h-[75vh] bg-[#0B0B0C] text-[#FAF6F0] flex items-center justify-center px-4 py-16">
         <form
           onSubmit={handleLogin}
           className="w-full max-w-sm rounded-3xl bg-[#1A1214] border-2 border-[#D4AF37] p-7 text-center shadow-[0_0_40px_rgba(212,175,55,0.2)] space-y-4"
         >
-          <div className="w-12 h-12 mx-auto rounded-full bg-[#B01E2E] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37]">
+          <div className="w-12 h-12 mx-auto rounded-full bg-[#9E1B2B] border border-[#D4AF37] flex items-center justify-center text-[#D4AF37]">
             <CssLock />
           </div>
           <div>
@@ -74,7 +74,7 @@ export default function AdminPage({ refreshTrigger }) {
           <button
             type="submit"
             disabled={loading}
-            className="btn-shimmer w-full py-3 rounded-full bg-[#B01E2E] border border-[#D4AF37] text-xs font-bold cursor-pointer disabled:opacity-60"
+            className="btn-shimmer w-full py-3 rounded-full bg-[#9E1B2B] border border-[#D4AF37] text-xs font-bold cursor-pointer disabled:opacity-60"
           >
             {loading ? 'Verifying...' : 'Unlock Owner Dashboard'}
           </button>
@@ -84,7 +84,7 @@ export default function AdminPage({ refreshTrigger }) {
   }
 
   return (
-    <div className="min-h-[75vh] bg-[#121212]">
+    <div className="min-h-[75vh] bg-[#0B0B0C]">
       <AdminDashboard
         refreshTrigger={refreshTrigger}
         adminToken={adminToken}

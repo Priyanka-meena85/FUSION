@@ -50,11 +50,11 @@ export default function HeroMirror({ onTryLook, onCheckDate, onOpenAdmin }) {
   };
 
   return (
-    <section id="home" className="relative overflow-hidden bg-gradient-to-b from-[#121212] via-[#3B0A10] to-[#B01E2E] text-[#FFF8F0] pb-14">
-      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[540px] h-[540px] rounded-full bg-[#D4AF37]/15 blur-3xl" />
+    <section id="home" className="relative overflow-hidden bg-gradient-to-b from-[#0B0B0C] via-[#151113] to-[#0B0B0C] text-[#FAF6F0] pb-16">
+      <div className="pointer-events-none absolute top-10 left-1/2 -translate-x-1/2 w-[560px] h-[560px] rounded-full bg-[#D4AF37]/12 blur-3xl" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 pt-8 sm:pt-10 flex flex-col items-center text-center">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#D4AF37]/50 bg-[#121212]/65 text-[#D4AF37] text-xs tracking-widest uppercase mb-5">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#D4AF37]/50 bg-[#0B0B0C]/65 text-[#D4AF37] text-xs tracking-widest uppercase mb-5">
           <CssSparkle size={11} />
           <span>@fusionsaloon16 · Bridal &amp; Nail Studio, Ajmer</span>
           <CssSparkle size={11} />
@@ -62,7 +62,7 @@ export default function HeroMirror({ onTryLook, onCheckDate, onOpenAdmin }) {
 
         <h1
           ref={headlineRef}
-          className="font-display text-3xl sm:text-5xl font-bold leading-tight max-w-2xl mb-7 text-[#FFF8F0]"
+          className="font-display text-3xl sm:text-5xl font-bold leading-tight max-w-2xl mb-7 text-[#FAF6F0]"
         >
           {headlineWords.map((word, idx) => (
             <span
@@ -85,18 +85,18 @@ export default function HeroMirror({ onTryLook, onCheckDate, onOpenAdmin }) {
           <span className="gold-particle bottom-20 -left-8" style={{ animationDelay: '1.7s', width: 7, height: 7 }} />
           <span className="gold-particle -bottom-3 right-10" style={{ animationDelay: '2.4s', width: 9, height: 9 }} />
 
-          <div className="relative p-3 sm:p-4 rounded-t-[160px] rounded-b-[28px] bg-gradient-to-br from-[#F5E08E] via-[#D4AF37] to-[#7C5B10] shadow-[0_24px_60px_rgba(0,0,0,0.65),0_0_40px_rgba(212,175,55,0.4)]">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-8 rounded-t-full bg-gradient-to-b from-[#FFF8F0] via-[#F5E08E] to-[#D4AF37] border-2 border-[#B01E2E] flex items-center justify-center shadow-lg">
-              <CssCrown className="text-[#B01E2E]" />
+          <div className="relative p-3 sm:p-4 rounded-t-[160px] rounded-b-[28px] bg-gradient-to-br from-[#EAD28B] via-[#D4AF37] to-[#7C5B10] shadow-[0_24px_60px_rgba(0,0,0,0.65),0_0_40px_rgba(212,175,55,0.4)]">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-8 rounded-t-full bg-gradient-to-b from-[#FAF6F0] via-[#EAD28B] to-[#D4AF37] border-2 border-[#9E1B2B] flex items-center justify-center shadow-lg">
+              <CssCrown className="text-[#9E1B2B]" />
             </div>
 
-            <div className="p-1.5 rounded-t-[148px] rounded-b-[20px] bg-[#121212] border border-[#FFF8F0]/40">
+            <div className="p-1.5 rounded-t-[148px] rounded-b-[20px] bg-[#0B0B0C] border border-[#FAF6F0]/40">
               <div className="relative w-[270px] sm:w-[310px] h-[340px] sm:h-[370px] rounded-t-[140px] rounded-b-[16px] overflow-hidden border border-[#D4AF37]/60">
                 <div ref={mirrorContentRef} className="w-full h-full">
                   <MirrorLookVisual variant={activeLook.id} jewellery="Kundan" makeup="HD" />
                 </div>
 
-                <div className="absolute bottom-3 inset-x-3 rounded-xl bg-[#121212]/80 backdrop-blur-md border border-[#D4AF37]/60 px-3.5 py-2.5 text-left z-20">
+                <div className="absolute bottom-3 inset-x-3 rounded-xl bg-[#0B0B0C]/80 backdrop-blur-md border border-[#D4AF37]/60 px-3.5 py-2.5 text-left z-20">
                   <div className="flex items-center justify-between gap-2">
                     <div>
                       <p className="text-[10px] uppercase tracking-widest text-[#D4AF37]">
@@ -107,13 +107,13 @@ export default function HeroMirror({ onTryLook, onCheckDate, onOpenAdmin }) {
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs text-[#FFF8F0]/65 block">Package</span>
+                      <span className="text-xs text-[#FAF6F0]/65 block">Package</span>
                       <span className="font-display text-base font-bold text-[#D4AF37]">
                         ₹{activeLook.price.toLocaleString('en-IN')}
                       </span>
                     </div>
                   </div>
-                  <p className="text-[11px] text-[#FFF8F0]/75 mt-1">{activeLook.tagline}</p>
+                  <p className="text-[11px] text-[#FAF6F0]/75 mt-1">{activeLook.tagline}</p>
                 </div>
               </div>
             </div>
@@ -131,8 +131,8 @@ export default function HeroMirror({ onTryLook, onCheckDate, onOpenAdmin }) {
                 onClick={() => handleSelectLook(idx)}
                 className={`press-bounce px-3 py-2.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
                   selected
-                    ? 'bg-[#D4AF37] text-[#121212] border-[#FFF8F0] shadow-[0_0_20px_rgba(212,175,55,0.5)]'
-                    : 'bg-[#121212]/60 text-[#FFF8F0] border-[#D4AF37]/40 hover:border-[#F5E08E]'
+                    ? 'bg-[#D4AF37] text-[#0B0B0C] border-[#FAF6F0] shadow-[0_0_20px_rgba(212,175,55,0.5)]'
+                    : 'bg-[#0B0B0C]/60 text-[#FAF6F0] border-[#D4AF37]/40 hover:border-[#EAD28B]'
                 }`}
               >
                 {look.label}
@@ -146,14 +146,14 @@ export default function HeroMirror({ onTryLook, onCheckDate, onOpenAdmin }) {
           <button
             type="button"
             onClick={onTryLook}
-            className="btn-shimmer w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#B01E2E] border-2 border-[#D4AF37] text-[#FFF8F0] font-bold text-sm tracking-wide shadow-lg cursor-pointer"
+            className="btn-shimmer w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#9E1B2B] border-2 border-[#D4AF37] text-[#FAF6F0] font-bold text-sm tracking-wide shadow-lg cursor-pointer"
           >
             Try Look in Mirror
           </button>
           <button
             type="button"
             onClick={onCheckDate}
-            className="btn-shimmer w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#121212]/85 border border-[#D4AF37] text-[#D4AF37] font-semibold text-sm tracking-wide cursor-pointer"
+            className="btn-shimmer w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#0B0B0C]/85 border border-[#D4AF37] text-[#D4AF37] font-semibold text-sm tracking-wide cursor-pointer"
           >
             Check Bridal Dates
           </button>
@@ -162,18 +162,18 @@ export default function HeroMirror({ onTryLook, onCheckDate, onOpenAdmin }) {
         <div className="mt-8 grid grid-cols-3 gap-3 sm:gap-8 w-full max-w-xl border-t border-[#D4AF37]/30 pt-5">
           <div>
             <div className="font-display text-xl sm:text-2xl font-bold text-[#D4AF37]">{bridesCount}+</div>
-            <div className="text-[11px] sm:text-xs text-[#FFF8F0]/75">Brides Styled</div>
+            <div className="text-[11px] sm:text-xs text-[#FAF6F0]/75">Brides Styled</div>
           </div>
           <div className="border-x border-[#D4AF37]/30 px-2">
             <div className="font-display text-xl sm:text-2xl font-bold text-[#D4AF37] inline-flex items-center gap-1.5">
               <span>{ratingCount}</span>
               <CssStar size={14} className="text-[#D4AF37]" />
             </div>
-            <div className="text-[11px] sm:text-xs text-[#FFF8F0]/75">JustDial &amp; Google</div>
+            <div className="text-[11px] sm:text-xs text-[#FAF6F0]/75">JustDial &amp; Google</div>
           </div>
           <div>
             <div className="font-display text-xl sm:text-2xl font-bold text-[#D4AF37]">48-Hr</div>
-            <div className="text-[11px] sm:text-xs text-[#FFF8F0]/75">Auto Date Lock</div>
+            <div className="text-[11px] sm:text-xs text-[#FAF6F0]/75">Auto Date Lock</div>
           </div>
         </div>
       </div>

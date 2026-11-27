@@ -35,18 +35,18 @@ export default function ArtistsGroomSection({ selectedArtist, onChooseArtist, on
   }, []);
 
   return (
-    <section className="reveal-section py-14 sm:py-18 px-4 bg-[#FFF8F0]">
+    <section className="reveal-section py-14 sm:py-18 px-4 bg-[#FAF6F0]">
       <div className="max-w-5xl mx-auto space-y-14">
         {/* #4 Artist Profiles */}
         <div>
           <div className="text-center mb-8">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#B01E2E] bg-[#FADADD] px-3.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#9E1B2B] bg-[#F3ECE1] px-3.5 py-1 rounded-full">
               <CssSparkle size={11} /> Choose Your Expert
             </span>
-            <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#121212] mt-3">
+            <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#0B0B0C] mt-3">
               Fusion Bridal &amp; Groom Artists
             </h2>
-            <p className="text-sm text-[#121212]/70 mt-1.5">
+            <p className="text-sm text-[#0B0B0C]/70 mt-1.5">
               Pick your preferred artist. System automatically blocks double-bookings &amp; artist leave dates.
             </p>
           </div>
@@ -63,8 +63,8 @@ export default function ArtistsGroomSection({ selectedArtist, onChooseArtist, on
                   key={a.id}
                   className={`rounded-3xl p-5 border transition flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-[#B01E2E] text-[#FFF8F0] border-[#D4AF37] shadow-xl'
-                      : 'bg-white text-[#121212] border-[#D4AF37]/35 shadow-sm'
+                      ? 'bg-[#9E1B2B] text-[#FAF6F0] border-[#D4AF37] shadow-xl'
+                      : 'bg-white text-[#0B0B0C] border-[#D4AF37]/35 shadow-sm'
                   }`}
                 >
                   <div>
@@ -72,8 +72,8 @@ export default function ArtistsGroomSection({ selectedArtist, onChooseArtist, on
                       <div
                         className={`w-12 h-12 rounded-full flex items-center justify-center font-display font-bold text-lg border-2 ${
                           isSelected
-                            ? 'bg-[#D4AF37] text-[#121212] border-white'
-                            : 'bg-[#FADADD] text-[#B01E2E] border-[#D4AF37]'
+                            ? 'bg-[#D4AF37] text-[#0B0B0C] border-white'
+                            : 'bg-[#F3ECE1] text-[#9E1B2B] border-[#D4AF37]'
                         }`}
                       >
                         {initials}
@@ -84,7 +84,7 @@ export default function ArtistsGroomSection({ selectedArtist, onChooseArtist, on
                     </div>
 
                     <h3 className="font-display text-lg font-bold">{a.name}</h3>
-                    <p className={`text-xs font-semibold mt-0.5 ${isSelected ? 'text-[#F5E08E]' : 'text-[#B01E2E]'}`}>
+                    <p className={`text-xs font-semibold mt-0.5 ${isSelected ? 'text-[#EAD28B]' : 'text-[#9E1B2B]'}`}>
                       {a.specialty}
                     </p>
                     <p className={`text-[11px] mt-1 ${isSelected ? 'text-white/75' : 'text-stone-500'}`}>
@@ -102,8 +102,8 @@ export default function ArtistsGroomSection({ selectedArtist, onChooseArtist, on
                     onClick={() => onChooseArtist(a.name)}
                     className={`press-bounce mt-4 w-full py-2.5 rounded-full text-xs font-bold border cursor-pointer ${
                       isSelected
-                        ? 'bg-[#D4AF37] text-[#121212] border-white'
-                        : 'bg-[#FFF8F0] text-[#B01E2E] border-[#D4AF37]/50 hover:bg-[#B01E2E] hover:text-white'
+                        ? 'bg-[#D4AF37] text-[#0B0B0C] border-white'
+                        : 'bg-[#FAF6F0] text-[#9E1B2B] border-[#D4AF37]/50 hover:bg-[#9E1B2B] hover:text-white'
                     }`}
                   >
                     {isSelected ? 'Selected for Booking' : 'Choose Artist'}
@@ -115,17 +115,17 @@ export default function ArtistsGroomSection({ selectedArtist, onChooseArtist, on
         </div>
 
         {/* #7 Dedicated Groom Packages */}
-        <div className="rounded-3xl bg-gradient-to-br from-[#121212] via-[#28181D] to-[#121212] text-[#FFF8F0] p-6 sm:p-9 border border-[#D4AF37]/60 shadow-2xl">
+        <div className="rounded-3xl bg-gradient-to-br from-[#0B0B0C] via-[#28181D] to-[#0B0B0C] text-[#FAF6F0] p-6 sm:p-9 border border-[#D4AF37]/60 shadow-2xl">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
             <div>
-              <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-[#F5E08E] font-bold">
+              <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-[#EAD28B] font-bold">
                 <CssCrown /> Dulha Studio · Unisex Salon
               </span>
               <h3 className="font-display text-2xl sm:text-3xl font-bold mt-1.5">
                 Royal Groom Packages — Camera-Ready Matte Finish
               </h3>
             </div>
-            <span className="text-xs text-[#FFF8F0]/70">Zero cakey look · Beard, Hair &amp; Safa Sync</span>
+            <span className="text-xs text-[#FAF6F0]/70">Zero cakey look · Beard, Hair &amp; Safa Sync</span>
           </div>
 
           <div className="grid md:grid-cols-3 gap-4">
@@ -136,15 +136,15 @@ export default function ArtistsGroomSection({ selectedArtist, onChooseArtist, on
               >
                 <div>
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#B01E2E] text-[#F5E08E] font-bold">
+                    <span className="text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#9E1B2B] text-[#EAD28B] font-bold">
                       {gp.tag}
                     </span>
-                    <span className="font-display text-xl font-bold text-[#F5E08E]">
+                    <span className="font-display text-xl font-bold text-[#EAD28B]">
                       ₹{gp.price.toLocaleString('en-IN')}
                     </span>
                   </div>
                   <h4 className="font-display text-lg font-bold mt-3">{gp.name}</h4>
-                  <ul className="mt-3 space-y-1.5 text-xs text-[#FFF8F0]/80">
+                  <ul className="mt-3 space-y-1.5 text-xs text-[#FAF6F0]/80">
                     {gp.items.map((it) => (
                       <li key={it} className="flex items-center gap-2">
                         <span className="text-[#D4AF37]"><CssCheck /></span>
@@ -157,7 +157,7 @@ export default function ArtistsGroomSection({ selectedArtist, onChooseArtist, on
                 <button
                   type="button"
                   onClick={() => onBookGroom(gp)}
-                  className="btn-shimmer mt-5 w-full py-2.5 rounded-full bg-[#D4AF37] text-[#121212] text-xs font-bold cursor-pointer"
+                  className="btn-shimmer mt-5 w-full py-2.5 rounded-full bg-[#D4AF37] text-[#0B0B0C] text-xs font-bold cursor-pointer"
                 >
                   Book Groom Slot
                 </button>

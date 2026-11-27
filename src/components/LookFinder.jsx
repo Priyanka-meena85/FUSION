@@ -4,7 +4,7 @@ import { CssSparkle, MirrorLookVisual } from './CssIcons';
 
 const LEHENGA_OPTIONS = [
   { id: 'Red', label: 'Red', swatch: '#B91C3B', variant: 'red-bride' },
-  { id: 'Maroon', label: 'Maroon', swatch: '#B01E2E', variant: 'red-bride' },
+  { id: 'Maroon', label: 'Maroon', swatch: '#9E1B2B', variant: 'red-bride' },
   { id: 'Pastel', label: 'Pastel', swatch: '#E598AC', variant: 'pastel-bride' },
   { id: 'Pink', label: 'Pink', swatch: '#D9468F', variant: 'engagement' },
 ];
@@ -59,16 +59,16 @@ export default function LookFinder({ onBookLook }) {
   };
 
   return (
-    <section id="looks" className="reveal-section py-14 sm:py-18 px-4 bg-[#FFF8F0]">
+    <section id="looks" className="reveal-section py-14 sm:py-18 px-4 bg-[#FAF6F0]">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-9">
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#B01E2E] bg-[#FADADD] px-3.5 py-1 rounded-full">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#9E1B2B] bg-[#F3ECE1] px-3.5 py-1 rounded-full">
             <CssSparkle size={11} /> Look Finder — Virtual Mirror Preview
           </span>
-          <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#121212] mt-3">
+          <h2 className="font-display text-2xl sm:text-4xl font-bold text-[#0B0B0C] mt-3">
             Design Your Signature Bridal Look
           </h2>
-          <p className="text-sm text-[#121212]/70 mt-2 max-w-xl mx-auto">
+          <p className="text-sm text-[#0B0B0C]/70 mt-2 max-w-xl mx-auto">
             Select your lehenga colour, jewellery &amp; makeup finish. The Magical Mirror previews your custom look with exact transparent pricing.
           </p>
         </div>
@@ -76,8 +76,8 @@ export default function LookFinder({ onBookLook }) {
         <div className="grid md:grid-cols-12 gap-7 items-center bg-white rounded-3xl p-5 sm:p-8 shadow-[0_20px_50px_rgba(107,15,42,0.08)] border border-[#D4AF37]/30">
           {/* Left: Interactive Mirror Preview */}
           <div className="md:col-span-5 flex flex-col items-center">
-            <div className="p-2.5 rounded-t-[130px] rounded-b-2xl bg-gradient-to-br from-[#F5E08E] via-[#D4AF37] to-[#8C6B14] shadow-xl">
-              <div className="w-[240px] sm:w-[260px] h-[300px] rounded-t-[120px] rounded-b-xl overflow-hidden border border-[#FFF8F0]/50">
+            <div className="p-2.5 rounded-t-[130px] rounded-b-2xl bg-gradient-to-br from-[#EAD28B] via-[#D4AF37] to-[#8C6B14] shadow-xl">
+              <div className="w-[240px] sm:w-[260px] h-[300px] rounded-t-[120px] rounded-b-xl overflow-hidden border border-[#FAF6F0]/50">
                 <MirrorLookVisual
                   variant={lehenga.variant}
                   jewellery={jewellery}
@@ -87,10 +87,10 @@ export default function LookFinder({ onBookLook }) {
               </div>
             </div>
             <div className="mt-3 text-center">
-              <span className="text-[11px] uppercase tracking-widest text-[#B01E2E] font-semibold">
+              <span className="text-[11px] uppercase tracking-widest text-[#9E1B2B] font-semibold">
                 Curated Bridal Match
               </span>
-              <p className="font-display text-base font-bold text-[#121212]">{aiLookName}</p>
+              <p className="font-display text-base font-bold text-[#0B0B0C]">{aiLookName}</p>
             </div>
           </div>
 
@@ -98,7 +98,7 @@ export default function LookFinder({ onBookLook }) {
           <div className="md:col-span-7 space-y-6">
             {/* 1. Lehenga Colour */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#B01E2E] mb-2.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#9E1B2B] mb-2.5">
                 1. Lehenga Colour
               </label>
               <div className="grid grid-cols-4 gap-2.5">
@@ -111,8 +111,8 @@ export default function LookFinder({ onBookLook }) {
                       onClick={() => setLehenga(opt)}
                       className={`press-bounce flex items-center justify-center gap-2 py-2.5 px-2 rounded-xl border text-xs font-semibold cursor-pointer transition ${
                         active
-                          ? 'border-[#D4AF37] bg-[#FADADD] text-[#B01E2E] shadow-sm'
-                          : 'border-stone-200 bg-[#FFF8F0] text-[#121212]/80 hover:border-[#D4AF37]/60'
+                          ? 'border-[#D4AF37] bg-[#F3ECE1] text-[#9E1B2B] shadow-sm'
+                          : 'border-stone-200 bg-[#FAF6F0] text-[#0B0B0C]/80 hover:border-[#D4AF37]/60'
                       }`}
                     >
                       <span
@@ -128,7 +128,7 @@ export default function LookFinder({ onBookLook }) {
 
             {/* 2. Jewellery */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#B01E2E] mb-2.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#9E1B2B] mb-2.5">
                 2. Jewellery Style
               </label>
               <div className="grid grid-cols-3 gap-2.5">
@@ -141,8 +141,8 @@ export default function LookFinder({ onBookLook }) {
                       onClick={() => handleJewellery(j)}
                       className={`press-bounce py-2.5 px-3 rounded-xl border text-xs font-semibold cursor-pointer transition ${
                         active
-                          ? 'border-[#D4AF37] bg-[#B01E2E] text-[#FFF8F0] shadow-md'
-                          : 'border-stone-200 bg-[#FFF8F0] text-[#121212]/80 hover:border-[#D4AF37]'
+                          ? 'border-[#D4AF37] bg-[#9E1B2B] text-[#FAF6F0] shadow-md'
+                          : 'border-stone-200 bg-[#FAF6F0] text-[#0B0B0C]/80 hover:border-[#D4AF37]'
                       }`}
                     >
                       {j}
@@ -154,7 +154,7 @@ export default function LookFinder({ onBookLook }) {
 
             {/* 3. Makeup Type */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#B01E2E] mb-2.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#9E1B2B] mb-2.5">
                 3. Makeup Finish
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -167,8 +167,8 @@ export default function LookFinder({ onBookLook }) {
                       onClick={() => setMakeup(m)}
                       className={`press-bounce py-2.5 px-4 rounded-xl border text-xs font-semibold cursor-pointer transition ${
                         active
-                          ? 'border-[#D4AF37] bg-[#B01E2E] text-[#FFF8F0] shadow-md'
-                          : 'border-stone-200 bg-[#FFF8F0] text-[#121212]/80 hover:border-[#D4AF37]'
+                          ? 'border-[#D4AF37] bg-[#9E1B2B] text-[#FAF6F0] shadow-md'
+                          : 'border-stone-200 bg-[#FAF6F0] text-[#0B0B0C]/80 hover:border-[#D4AF37]'
                       }`}
                     >
                       {m} Bridal Finish
@@ -181,23 +181,23 @@ export default function LookFinder({ onBookLook }) {
             {/* Output Card */}
             <div
               ref={descRef}
-              className="rounded-2xl bg-gradient-to-br from-[#FFF8F0] to-[#FADADD]/70 border border-[#D4AF37]/45 p-4 space-y-3"
+              className="rounded-2xl bg-gradient-to-br from-[#FAF6F0] to-[#F3ECE1]/70 border border-[#D4AF37]/45 p-4 space-y-3"
             >
-              <p className="text-xs text-[#121212]/80 leading-relaxed">{aiSummary}</p>
+              <p className="text-xs text-[#0B0B0C]/80 leading-relaxed">{aiSummary}</p>
               <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#D4AF37]/25">
                 <div>
-                  <span className="text-[10px] uppercase text-[#121212]/60 block">Recommended</span>
-                  <span className="text-xs sm:text-sm font-bold text-[#B01E2E]">{recommendedPackage}</span>
+                  <span className="text-[10px] uppercase text-[#0B0B0C]/60 block">Recommended</span>
+                  <span className="text-xs sm:text-sm font-bold text-[#9E1B2B]">{recommendedPackage}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase text-[#121212]/60 block">Exact Price</span>
-                  <span className="font-display text-lg sm:text-xl font-bold text-[#121212]">
+                  <span className="text-[10px] uppercase text-[#0B0B0C]/60 block">Exact Price</span>
+                  <span className="font-display text-lg sm:text-xl font-bold text-[#0B0B0C]">
                     ₹{displayPrice.toLocaleString('en-IN')}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase text-[#121212]/60 block">Lead Artist</span>
-                  <span className="text-xs font-semibold text-[#121212]">{artistName.split(' (')[0]}</span>
+                  <span className="text-[10px] uppercase text-[#0B0B0C]/60 block">Lead Artist</span>
+                  <span className="text-xs font-semibold text-[#0B0B0C]">{artistName.split(' (')[0]}</span>
                 </div>
               </div>
             </div>
@@ -214,7 +214,7 @@ export default function LookFinder({ onBookLook }) {
                   artist: artistName,
                 })
               }
-              className="btn-shimmer w-full py-3.5 rounded-full bg-gradient-to-r from-[#B01E2E] via-[#8D173A] to-[#B01E2E] text-[#FFF8F0] font-bold text-sm tracking-wide border border-[#D4AF37] cursor-pointer"
+              className="btn-shimmer w-full py-3.5 rounded-full bg-gradient-to-r from-[#9E1B2B] via-[#8D173A] to-[#9E1B2B] text-[#FAF6F0] font-bold text-sm tracking-wide border border-[#D4AF37] cursor-pointer"
             >
               Book This Bridal Look
             </button>

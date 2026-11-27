@@ -16,7 +16,7 @@ export default function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#D4AF37]/40 bg-[#121212]/95 backdrop-blur-md text-[#FFF8F0]">
+    <header className="sticky top-0 z-40 border-b border-[#D4AF37]/40 bg-[#0B0B0C]/95 backdrop-blur-md text-[#FAF6F0]">
       <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-2">
         {/* Left: Circular Instagram Logo + FUSION + THE MAGICAL MIRROR + By Mini Jain */}
         <NavLink to="/" onClick={() => setDrawerOpen(false)} className="flex items-center gap-2.5 sm:gap-3">
@@ -26,14 +26,14 @@ export default function Navbar() {
               <span className="font-display text-base sm:text-xl font-extrabold tracking-widest text-[#D4AF37] leading-none">
                 FUSION
               </span>
-              <span className="font-script text-sm sm:text-lg text-[#FADADD] leading-none">
+              <span className="font-script text-sm sm:text-lg text-[#F3ECE1] leading-none">
                 By Mini Jain
               </span>
             </div>
-            <div className="text-[9px] sm:text-[10px] tracking-[0.22em] uppercase text-[#FFF8F0]/80 mt-0.5">
+            <div className="text-[9px] sm:text-[10px] tracking-[0.22em] uppercase text-[#FAF6F0]/80 mt-0.5">
               THE MAGICAL MIRROR
             </div>
-            <div className="text-[10px] text-[#FFF8F0]/60 hidden sm:flex items-center gap-2 mt-0.5">
+            <div className="text-[10px] text-[#FAF6F0]/60 hidden sm:flex items-center gap-2 mt-0.5">
               <span>Naka Madar, Ajmer</span>
               <span className="text-[#D4AF37]">|</span>
               <span className="inline-flex items-center gap-1 text-[#D4AF37] font-semibold">
@@ -57,8 +57,8 @@ export default function Navbar() {
               className={({ isActive }) =>
                 `px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
                   isActive
-                    ? 'bg-[#B01E2E] text-[#FFF8F0] border border-[#D4AF37] shadow-[0_0_12px_rgba(212,175,55,0.3)]'
-                    : 'text-[#FFF8F0]/80 hover:text-[#D4AF37] hover:bg-white/5'
+                    ? 'bg-[#9E1B2B] text-[#FAF6F0] border border-[#D4AF37] shadow-[0_0_12px_rgba(212,175,55,0.3)]'
+                    : 'text-[#FAF6F0]/80 hover:text-[#D4AF37] hover:bg-white/5'
                 }`
               }
             >
@@ -75,7 +75,7 @@ export default function Navbar() {
             className={({ isActive }) =>
               `press-bounce hidden sm:inline-block text-[11px] px-3 py-1.5 rounded-full border transition ${
                 isActive
-                  ? 'bg-[#D4AF37] text-[#121212] border-white font-bold'
+                  ? 'bg-[#D4AF37] text-[#0B0B0C] border-white font-bold'
                   : 'border-[#D4AF37]/55 text-[#D4AF37] hover:bg-[#D4AF37]/15'
               }`
             }
@@ -111,7 +111,7 @@ export default function Navbar() {
       {drawerOpen && (
         <nav
           aria-label="Mobile Navigation"
-          className="lg:hidden border-t border-[#D4AF37]/30 bg-[#121212] px-4 py-4 grid grid-cols-2 gap-2"
+          className="lg:hidden border-t border-[#D4AF37]/30 bg-[#0B0B0C] px-4 py-4 grid grid-cols-2 gap-2"
         >
           {[...NAV_LINKS, { to: '/admin', label: 'Owner Admin' }].map((link) => (
             <NavLink
@@ -122,8 +122,8 @@ export default function Navbar() {
               className={({ isActive }) =>
                 `px-3.5 py-2.5 rounded-xl text-xs font-bold border text-center transition ${
                   isActive
-                    ? 'bg-[#B01E2E] text-[#FFF8F0] border-[#D4AF37]'
-                    : 'bg-white/5 text-[#FFF8F0]/85 border-white/10 hover:border-[#D4AF37]/50'
+                    ? 'bg-[#9E1B2B] text-[#FAF6F0] border-[#D4AF37]'
+                    : 'bg-white/5 text-[#FAF6F0]/85 border-white/10 hover:border-[#D4AF37]/50'
                 }`
               }
             >
