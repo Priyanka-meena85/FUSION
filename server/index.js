@@ -59,11 +59,19 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(new Error('Origin not allowed by CORS'));
+      const err = new Error('Origin not allowed by CORS');
+      err.status = 403;
+      return callback(err);
     },
     credentials: true,
   })
 );
+app.use((err, _req, res, next) => {
+  if (err && err.message === 'Origin not allowed by CORS') {
+    return res.status(403).json({ error: 'Forbidden: Origin not allowed by CORS' });
+  }
+  next(err);
+});
 app.use(cookieParser());
 app.use(express.json({ limit: '6mb' }));
 app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
