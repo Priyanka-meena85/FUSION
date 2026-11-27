@@ -112,6 +112,18 @@ db.exec(`
     extension_needed TEXT NOT NULL,
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS payments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    booking_id INTEGER NOT NULL,
+    provider TEXT NOT NULL,
+    order_id TEXT NOT NULL,
+    payment_id TEXT,
+    amount_inr INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'created',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    verified_at TEXT
+  );
 `);
 
 // Safe migrations for existing DB files

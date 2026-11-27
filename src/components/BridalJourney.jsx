@@ -16,13 +16,9 @@ export default function BridalJourney({ onJourneyUpdate }) {
   const [rescheduleMsg, setRescheduleMsg] = useState('');
   const [celebrateDDay, setCelebrateDDay] = useState(false);
 
-  const getBookingHeaders = () => {
-    const token = sessionStorage.getItem('fusion_booking_token') || '';
-    return {
-      'Content-Type': 'application/json',
-      ...(token ? { 'x-booking-token': token } : {}),
-    };
-  };
+  const getBookingHeaders = () => ({
+    'Content-Type': 'application/json',
+  });
 
   const loadJourney = () => {
     fetch('/api/journey', { headers: getBookingHeaders(), credentials: 'include' })

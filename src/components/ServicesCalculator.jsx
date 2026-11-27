@@ -44,15 +44,15 @@ export default function ServicesCalculator({ onTokenBooked }) {
       const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           customer_name: 'Salon Walk-in Client',
           phone: '+91 98290 11223',
           city: 'Ajmer',
           event_date: '2026-02-20',
           package_name: `Daily Salon (${selectedIds.length} Services)`,
+          service_ids: selectedIds,
           makeup_type: names,
-          total_price: total,
-          advance_amount: 199,
           mode: 'token',
         }),
       });

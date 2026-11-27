@@ -18,11 +18,14 @@ const {
   requireAdmin,
   requireBookingAccess,
 } = require('./middleware/auth');
-const { loginLimiter, writeLimiter } = require('./middleware/rateLimit');
+const { apiLimiter, loginLimiter, writeLimiter } = require('./middleware/rateLimit');
 const {
   PACKAGE_CATALOG,
+  SERVICE_CATALOG,
   CITY_TRAVEL_CATALOG,
   UPSELL_CATALOG,
+  TOKEN_ADVANCE_INR,
+  idParamSchema,
   loginSchema,
   createBookingSchema,
   rescheduleSchema,
@@ -32,7 +35,10 @@ const {
   reviewSchema,
   leadSchema,
   campaignToggleSchema,
+  artistLeaveSchema,
+  journeyToggleSchema,
   verifyPaymentSchema,
+  uploadImageSchema,
   validateImageMagicBytes,
 } = require('./validation/schemas');
 
@@ -42,21 +48,40 @@ const secConfig = getSecurityConfig();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://localhost:3001')
+const defaultDevOrigins = 'http://localhost:5173,http://localhost:3001';
+const rawAllowedOrigins = secConfig.isProd
+  ? (process.env.ALLOWED_ORIGINS || '')
+  : (process.env.ALLOWED_ORIGINS || defaultDevOrigins);
+
+const allowedOrigins = rawAllowedOrigins
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean);
 
 app.use(
   helmet({
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: secConfig.isProd
+      ? {
+          directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+            fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+            imgSrc: ["'self'", 'data:', 'blob:'],
+            connectSrc: ["'self'", ...allowedOrigins],
+          },
+        }
+      : false,
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   })
 );
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin) {
+        return callback(null, true);
+      }
+      if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
       const err = new Error('Origin not allowed by CORS');
@@ -66,15 +91,36 @@ app.use(
     credentials: true,
   })
 );
-app.use((err, _req, res, next) => {
-  if (err && err.message === 'Origin not allowed by CORS') {
-    return res.status(403).json({ error: 'Forbidden: Origin not allowed by CORS' });
-  }
-  next(err);
-});
 app.use(cookieParser());
-app.use(express.json({ limit: '6mb' }));
+app.use('/api', apiLimiter);
 app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
+
+// 6 MB upload parser MUST be mounted BEFORE global 64 KB JSON parser
+app.post('/api/admin/upload-image', express.json({ limit: '6mb' }), requireAdmin, (req, res) => {
+  const parsed = uploadImageSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: 'Invalid upload slot or image payload.' });
+  }
+  const { slot, dataUrl } = parsed.data;
+  if (/svg/i.test(dataUrl.slice(0, 40)) || !/^data:image\/(jpeg|jpg|png|webp);base64,/.test(dataUrl)) {
+    return res.status(400).json({ error: 'Unsupported image format. Only JPEG, PNG, and WebP are allowed.' });
+  }
+  const base64 = dataUrl.split(',')[1];
+  if (!base64) return res.status(400).json({ error: 'Invalid base64 image' });
+
+  const buffer = Buffer.from(base64, 'base64');
+  if (buffer.length > 5 * 1024 * 1024 || !validateImageMagicBytes(buffer)) {
+    return res.status(400).json({ error: 'Image failed magic-byte signature validation or exceeds 5MB.' });
+  }
+
+  const imagesDir = path.join(__dirname, '..', 'public', 'images');
+  fs.mkdirSync(imagesDir, { recursive: true });
+  fs.writeFileSync(path.join(imagesDir, slot), buffer);
+  res.json({ ok: true, path: `/images/${slot}` });
+});
+
+// Strict 64 KB limit for all other API JSON payloads
+app.use(express.json({ limit: '64kb' }));
 
 // ---------------------------------------------------------------------------
 // Admin Auth
@@ -115,25 +161,6 @@ app.post('/api/admin/logout', (req, res) => {
 
 const ALLOWED_SLOTS = new Set(['logo.jpg', 'bride-red.jpg', 'bride-pastel.jpg', 'engagement.jpg', 'groom.jpg', 'nails.jpg']);
 
-app.post('/api/admin/upload-image', requireAdmin, (req, res) => {
-  const { slot, dataUrl } = req.body || {};
-  if (!ALLOWED_SLOTS.has(slot) || typeof dataUrl !== 'string' || !/^data:image\/(jpeg|jpg|png|webp);base64,/.test(dataUrl)) {
-    return res.status(400).json({ error: 'Invalid slot or unsupported image format (JPEG/PNG/WebP only).' });
-  }
-  const base64 = dataUrl.split(',')[1];
-  if (!base64) return res.status(400).json({ error: 'Invalid base64 image' });
-
-  const buffer = Buffer.from(base64, 'base64');
-  if (buffer.length > 5 * 1024 * 1024 || !validateImageMagicBytes(buffer)) {
-    return res.status(400).json({ error: 'Image failed magic-byte validation or exceeds 5MB.' });
-  }
-
-  const imagesDir = path.join(__dirname, '..', 'public', 'images');
-  fs.mkdirSync(imagesDir, { recursive: true });
-  fs.writeFileSync(path.join(imagesDir, slot), buffer);
-  res.json({ ok: true, path: `/images/${slot}` });
-});
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -157,6 +184,12 @@ function releaseExpiredHolds() {
 }
 
 // ---------------------------------------------------------------------------
+function sanitizeBookingPublic(b) {
+  if (!b) return null;
+  const { phone: _omitted, ...safe } = b;
+  return safe;
+}
+
 // Public & Customer Endpoints
 // ---------------------------------------------------------------------------
 app.get('/api/health', (_req, res) => {
@@ -172,11 +205,12 @@ app.get('/api/artists', (_req, res) => {
 });
 
 app.patch('/api/artists/:id/leave', requireAdmin, (req, res) => {
-  const { id } = req.params;
-  const { date_str } = req.body || {};
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date_str || '')) {
-    return res.status(400).json({ error: 'Invalid date_str' });
-  }
+  const param = idParamSchema.safeParse(req.params);
+  if (!param.success) return res.status(400).json({ error: 'Invalid artist id' });
+  const parsed = artistLeaveSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: 'Invalid date_str' });
+  const { id } = param.data;
+  const { date_str } = parsed.data;
   const artist = db.prepare('SELECT * FROM artists WHERE id = ?').get(id);
   if (!artist) return res.status(404).json({ error: 'Artist not found' });
   const currentLeaves = artist.leave_dates ? artist.leave_dates.split(',').filter(Boolean) : [];
@@ -209,6 +243,7 @@ app.post('/api/bookings', writeLimiter, async (req, res) => {
     city,
     event_date,
     package_name,
+    service_ids,
     makeup_type,
     lehenga_colour,
     jewellery,
@@ -218,10 +253,26 @@ app.post('/api/bookings', writeLimiter, async (req, res) => {
 
   // Authoritative server-side pricing
   let basePrice = 0;
-  let advanceAmount = 199;
+  let advanceAmount = TOKEN_ADVANCE_INR;
+  let resolvedPackageName = package_name;
+  let resolvedMakeupType = makeup_type;
+
   if (mode === 'token') {
-    basePrice = 1499; // Daily salon services estimate; token is fixed ₹199
-    advanceAmount = 199;
+    if (!service_ids || service_ids.length === 0) {
+      return res.status(400).json({ error: 'At least one valid service_id is required for ₹199 token booking.' });
+    }
+    const selectedServices = [];
+    for (const sid of service_ids) {
+      const svc = SERVICE_CATALOG[sid];
+      if (!svc) {
+        return res.status(400).json({ error: `Unknown service id: ${sid}` });
+      }
+      basePrice += svc.price;
+      selectedServices.push(svc.name);
+    }
+    advanceAmount = TOKEN_ADVANCE_INR;
+    resolvedPackageName = `Daily Salon (${selectedServices.length} Services)`;
+    resolvedMakeupType = selectedServices.join(', ');
   } else {
     const pkg = PACKAGE_CATALOG[package_name];
     if (!pkg) {
@@ -275,8 +326,8 @@ app.post('/api/bookings', writeLimiter, async (req, res) => {
         phone,
         city,
         event_date,
-        package_name,
-        makeup_type,
+        resolvedPackageName,
+        resolvedMakeupType,
         lehenga_colour,
         jewellery,
         artistBase,
@@ -305,7 +356,7 @@ app.post('/api/bookings', writeLimiter, async (req, res) => {
       'Website',
       city,
       event_date,
-      package_name,
+      resolvedPackageName,
       '48-Hr Hold',
       `${lehenga_colour} + ${jewellery} · Receipt ${receiptCode}`
     );
@@ -324,6 +375,9 @@ app.post('/api/bookings', writeLimiter, async (req, res) => {
       receiptCode,
       customerName: customer_name,
     });
+    db.prepare(
+      `INSERT INTO payments (booking_id, provider, order_id, amount_inr, status) VALUES (?, ?, ?, ?, 'created')`
+    ).run(createdBooking.id, payment.provider || 'local-simulation', payment.orderId, advanceAmount);
   } catch (err) {
     return res.status(502).json({ error: 'Payment gateway unavailable. Hold preserved for 48 hours.' });
   }
@@ -339,13 +393,13 @@ app.post('/api/bookings', writeLimiter, async (req, res) => {
     httpOnly: true,
     secure: secConfig.isProd,
     sameSite: 'strict',
+    path: '/',
     maxAge: 90 * 24 * 3600 * 1000,
   });
 
   res.status(201).json({
-    booking: createdBooking,
+    booking: sanitizeBookingPublic(createdBooking),
     receiptCode,
-    bookingToken,
     payment,
   });
 });
@@ -356,6 +410,26 @@ app.post('/api/payments/verify', writeLimiter, async (req, res) => {
     return res.status(400).json({ error: 'Invalid payment verification payload.' });
   }
   const { booking_id, orderId, paymentId, signature } = parsed.data;
+
+  // Enforce booking ownership via HttpOnly cookie or Owner session
+  const adminData = verifySignedToken(extractAdminToken(req));
+  const bookingCookieData = verifySignedToken(req.cookies?.fusion_booking_token || '');
+  const isOwner = adminData?.role === 'owner';
+  const isBookingHolder = bookingCookieData?.role === 'bride' && bookingCookieData.bookingId === booking_id;
+  if (!isOwner && !isBookingHolder) {
+    return res.status(403).json({ error: 'Forbidden: Valid booking session required to verify payment.' });
+  }
+
+  const paymentRecord = db
+    .prepare('SELECT * FROM payments WHERE booking_id = ? AND order_id = ? ORDER BY id DESC LIMIT 1')
+    .get(booking_id, orderId);
+  if (!paymentRecord) {
+    return res.status(404).json({ error: 'Payment order does not match this booking.' });
+  }
+  if (paymentRecord.status === 'verified') {
+    return res.status(409).json({ error: 'Payment order has already been verified.' });
+  }
+
   if (!verifyRazorpaySignature({ orderId, paymentId, signature })) {
     return res.status(400).json({ error: 'Invalid payment signature' });
   }
@@ -367,6 +441,10 @@ app.post('/api/payments/verify', writeLimiter, async (req, res) => {
   const finalReceipt = booking.receipt_code.replace(/^HOLD-/, 'FUS-');
 
   db.exec('BEGIN IMMEDIATE');
+  db.prepare(`UPDATE payments SET status = 'verified', payment_id = ?, verified_at = datetime('now') WHERE id = ?`).run(
+    paymentId,
+    paymentRecord.id
+  );
   db.prepare(`UPDATE bookings SET status = ?, hold_expires_at = NULL, receipt_code = ? WHERE id = ?`).run(
     finalStatus,
     finalReceipt,
@@ -387,11 +465,13 @@ app.post('/api/payments/verify', writeLimiter, async (req, res) => {
   });
 
   const updated = db.prepare('SELECT * FROM bookings WHERE id = ?').get(booking_id);
-  res.json({ ok: true, verified: true, booking: updated, receiptCode: finalReceipt });
+  res.json({ ok: true, verified: true, booking: sanitizeBookingPublic(updated), receiptCode: finalReceipt });
 });
 
 app.post('/api/bookings/:id/pay', requireAdmin, (req, res) => {
-  const { id } = req.params;
+  const param = idParamSchema.safeParse(req.params);
+  if (!param.success) return res.status(400).json({ error: 'Invalid booking id' });
+  const { id } = param.data;
   const booking = db.prepare('SELECT * FROM bookings WHERE id = ?').get(id);
   if (!booking) return res.status(404).json({ error: 'Booking not found' });
 
@@ -407,7 +487,9 @@ app.post('/api/bookings/:id/pay', requireAdmin, (req, res) => {
 });
 
 app.post('/api/bookings/:id/reschedule', requireBookingAccess, (req, res) => {
-  const { id } = req.params;
+  const param = idParamSchema.safeParse(req.params);
+  if (!param.success) return res.status(400).json({ error: 'Invalid booking id' });
+  const { id } = param.data;
   const parsed = rescheduleSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.issues[0]?.message || 'Invalid date' });
@@ -444,11 +526,13 @@ app.post('/api/bookings/:id/reschedule', requireBookingAccess, (req, res) => {
   db.prepare(`UPDATE bookings SET event_date = ?, reschedule_count = reschedule_count + 1 WHERE id = ?`).run(new_date, id);
   db.exec('COMMIT');
 
-  res.json({ booking: db.prepare('SELECT * FROM bookings WHERE id = ?').get(id) });
+  res.json({ booking: sanitizeBookingPublic(db.prepare('SELECT * FROM bookings WHERE id = ?').get(id)) });
 });
 
 app.post('/api/bookings/:id/upsell', requireBookingAccess, (req, res) => {
-  const { id } = req.params;
+  const param = idParamSchema.safeParse(req.params);
+  if (!param.success) return res.status(400).json({ error: 'Invalid booking id' });
+  const { id } = param.data;
   const parsed = upsellSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: 'Invalid upsell item' });
@@ -465,7 +549,7 @@ app.post('/api/bookings/:id/upsell', requireBookingAccess, (req, res) => {
   const nextUpsells = booking.upsells ? `${booking.upsells}, ${item_name}` : item_name;
   const nextTotal = Number(booking.total_price) + serverPrice;
   db.prepare('UPDATE bookings SET upsells = ?, total_price = ? WHERE id = ?').run(nextUpsells, nextTotal, id);
-  res.json({ booking: db.prepare('SELECT * FROM bookings WHERE id = ?').get(id) });
+  res.json({ booking: sanitizeBookingPublic(db.prepare('SELECT * FROM bookings WHERE id = ?').get(id)) });
 });
 
 app.post('/api/waitlist', writeLimiter, (req, res) => {
@@ -477,11 +561,13 @@ app.post('/api/waitlist', writeLimiter, (req, res) => {
   const info = db
     .prepare('INSERT INTO waitlist (date_str, bride_name, phone, package_name) VALUES (?, ?, ?, ?)')
     .run(date_str, bride_name, phone, package_name);
-  res.status(201).json({ entry: db.prepare('SELECT * FROM waitlist WHERE id = ?').get(info.lastInsertRowid) });
+  res.status(201).json({ ok: true, id: info.lastInsertRowid, date_str });
 });
 
 app.post('/api/waitlist/:id/notify', requireAdmin, (req, res) => {
-  const { id } = req.params;
+  const param = idParamSchema.safeParse(req.params);
+  if (!param.success) return res.status(400).json({ error: 'Invalid waitlist id' });
+  const { id } = param.data;
   db.prepare('UPDATE waitlist SET notified = 1 WHERE id = ?').run(id);
   res.json({ entry: db.prepare('SELECT * FROM waitlist WHERE id = ?').get(id) });
 });
@@ -489,7 +575,7 @@ app.post('/api/waitlist/:id/notify', requireAdmin, (req, res) => {
 // Scoped Journey Portal (Never leaks another customer's PII publicly)
 app.get('/api/journey', (req, res) => {
   const steps = db.prepare('SELECT * FROM journey_steps ORDER BY sort_order ASC').all();
-  const bookingToken = req.headers['x-booking-token'] || req.cookies?.fusion_booking_token || '';
+  const bookingToken = req.cookies?.fusion_booking_token || '';
   const tokenData = verifySignedToken(bookingToken);
   const adminData = verifySignedToken(extractAdminToken(req));
 
@@ -500,7 +586,7 @@ app.get('/api/journey', (req, res) => {
     activeBooking = db.prepare('SELECT id, customer_name, city, event_date, package_name, artist_name, advance_amount, total_price, status, reschedule_count, receipt_code FROM bookings WHERE id = ?').get(tokenData.bookingId);
     prepForm = db.prepare('SELECT * FROM bride_prep_forms WHERE booking_id = ? ORDER BY id DESC LIMIT 1').get(tokenData.bookingId);
   } else if (adminData?.role === 'owner') {
-    activeBooking = db.prepare(`SELECT * FROM bookings WHERE status IN ('locked', 'hold') ORDER BY id DESC LIMIT 1`).get();
+    activeBooking = db.prepare(`SELECT id, customer_name, city, event_date, package_name, artist_name, advance_amount, total_price, status, reschedule_count, receipt_code FROM bookings WHERE status IN ('locked', 'hold') ORDER BY id DESC LIMIT 1`).get();
     if (activeBooking) {
       prepForm = db.prepare('SELECT * FROM bride_prep_forms WHERE booking_id = ? ORDER BY id DESC LIMIT 1').get(activeBooking.id);
     }
@@ -509,33 +595,27 @@ app.get('/api/journey', (req, res) => {
   res.json({ steps, prepForm, latestBooking: activeBooking });
 });
 
-app.patch('/api/journey/:id', (req, res) => {
-  const bookingToken = req.headers['x-booking-token'] || req.cookies?.fusion_booking_token || '';
-  const tokenData = verifySignedToken(bookingToken);
-  const adminData = verifySignedToken(extractAdminToken(req));
-  if (!tokenData && !adminData) {
-    return res.status(401).json({ error: 'Book or sign in to update your personal bridal checklist.' });
-  }
-  const { id } = req.params;
-  const { completed } = req.body || {};
+app.patch('/api/journey/:id', requireBookingAccess, (req, res) => {
+  const param = idParamSchema.safeParse(req.params);
+  if (!param.success) return res.status(400).json({ error: 'Invalid journey step id' });
+  const parsed = journeyToggleSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: 'Invalid journey toggle payload' });
+  const { id } = param.data;
+  const { completed } = parsed.data;
   db.prepare('UPDATE journey_steps SET completed = ? WHERE id = ?').run(completed ? 1 : 0, id);
   const steps = db.prepare('SELECT * FROM journey_steps ORDER BY sort_order ASC').all();
   res.json({ steps });
 });
 
-app.post('/api/prep-form', (req, res) => {
-  const bookingToken = req.headers['x-booking-token'] || req.cookies?.fusion_booking_token || '';
-  const tokenData = verifySignedToken(bookingToken);
-  const adminData = verifySignedToken(extractAdminToken(req));
-  if (!tokenData && !adminData) {
-    return res.status(401).json({ error: 'Valid booking session required to save outfit details.' });
-  }
-
+app.post('/api/prep-form', requireBookingAccess, (req, res) => {
   const parsed = prepFormSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.issues[0]?.message || 'Invalid prep form data' });
   }
-  const targetBookingId = tokenData?.bookingId || 1;
+  const targetBookingId = req.bookingAccess?.bookingId;
+  if (!targetBookingId) {
+    return res.status(400).json({ error: 'Booking session required to save outfit details.' });
+  }
   const { lehenga_colour, blouse_note, jewellery, lens_needed, extension_needed } = parsed.data;
   const info = db
     .prepare(`
@@ -569,11 +649,13 @@ app.get('/api/campaigns', (_req, res) => {
 });
 
 app.patch('/api/campaigns/:id', requireAdmin, (req, res) => {
+  const param = idParamSchema.safeParse(req.params);
+  if (!param.success) return res.status(400).json({ error: 'Invalid campaign id' });
   const parsed = campaignToggleSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: 'Invalid campaign toggle payload' });
   }
-  const { id } = req.params;
+  const { id } = param.data;
   const { enabled } = parsed.data;
   const existing = db.prepare('SELECT * FROM campaigns WHERE id = ?').get(id);
   if (!existing) return res.status(404).json({ error: 'Campaign not found' });
@@ -591,7 +673,7 @@ app.post('/api/leads', writeLimiter, (req, res) => {
   const info = db
     .prepare(`INSERT INTO leads (name, phone, source, city, event_date, makeup_type, status, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
     .run(name, phone, source, city, event_date, makeup_type, status, notes);
-  res.status(201).json({ lead: db.prepare('SELECT * FROM leads WHERE id = ?').get(info.lastInsertRowid) });
+  res.status(201).json({ ok: true, id: info.lastInsertRowid });
 });
 
 app.get('/api/admin/overview', requireAdmin, (_req, res) => {
@@ -641,6 +723,20 @@ if (fs.existsSync(distDir)) {
     next();
   });
 }
+
+// Centralized Safe Error Handler (never exposes stack traces, DB details, or secrets)
+app.use((err, _req, res, _next) => {
+  if (err?.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'Request payload exceeds allowed size limit.' });
+  }
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({ error: 'Malformed JSON request body.' });
+  }
+  if (err?.message === 'Origin not allowed by CORS' || err?.status === 403) {
+    return res.status(403).json({ error: 'Forbidden: Origin not allowed by CORS.' });
+  }
+  return res.status(500).json({ error: 'An unexpected server error occurred.' });
+});
 
 app.listen(PORT, () => {
   console.log(`Fusion Salon Server running at http://localhost:${PORT} (${secConfig.isProd ? 'production' : 'development'})`);

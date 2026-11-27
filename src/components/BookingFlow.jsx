@@ -108,6 +108,7 @@ export default function BookingFlow({ preselectedLook, selectedArtist, onBooking
       const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           customer_name: brideName,
           phone,
@@ -118,9 +119,6 @@ export default function BookingFlow({ preselectedLook, selectedArtist, onBooking
           lehenga_colour: preselectedLook?.lehenga || 'Red',
           jewellery: preselectedLook?.jewellery || 'Kundan',
           artist_name: activeArtist,
-          travel_charge: cityObj.charge,
-          total_price: grandTotal,
-          advance_amount: selectedPkg.advance,
           mode,
         }),
       });
@@ -128,9 +126,6 @@ export default function BookingFlow({ preselectedLook, selectedArtist, onBooking
       if (!res.ok) {
         setErrorMsg(data.error || 'Could not complete booking');
       } else {
-        if (data.bookingToken) {
-          sessionStorage.setItem('fusion_booking_token', data.bookingToken);
-        }
         let finalBooking = data.booking;
         let finalReceipt = data.receiptCode;
 
@@ -169,13 +164,9 @@ export default function BookingFlow({ preselectedLook, selectedArtist, onBooking
 
   const handleAddUpsell = async (name, price) => {
     if (!confirmation || upsellAdded.includes(name)) return;
-    const bookingToken = sessionStorage.getItem('fusion_booking_token') || '';
     const res = await fetch(`/api/bookings/${confirmation.id}/upsell`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(bookingToken ? { 'x-booking-token': bookingToken } : {}),
-      },
+      headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ item_name: name }),
     });
